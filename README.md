@@ -1,5 +1,5 @@
 Gamepedia User Manual
-[🇨🇳中文版本](./README.zh.md)
+[🇨🇳 点此查看中文说明](./README.zh.md)
 
 Gamepedia is a multi-platform game library aggregator that helps you centrally view and manage games from Steam, Epic Games, GOG, and Cubejoy. Without switching multiple clients, you can browse all your games in a clean web interface, jump to store pages, launch games with one click, and enjoy locally cached cover images with infinite scrolling.
 Features
