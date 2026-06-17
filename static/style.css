@@ -1,0 +1,383 @@
+/* Steam 风格深色主题 */
+:root {
+    --bg-color: #0f1a24;
+    --bg-gradient: linear-gradient(145deg, #1a2a3a 0%, #0f1a24 100%);
+    --sidebar-bg: rgba(20, 30, 40, 0.85);
+    --card-bg: rgba(10, 20, 28, 0.7);
+    --accent-color: #66c0f4;
+    --accent-hover: #89d1f7;
+    --text-color: #e0e6ed;
+    --border-color: #2c4c6c;
+}
+
+body {
+    font-family: 'Segoe UI', 'Motiva Sans', 'Franklin Gothic Medium', Tahoma, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: var(--bg-gradient);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    min-height: 100vh;
+    background-attachment: fixed;
+    background-size: auto;
+    background-repeat: repeat;
+    /* 允许自定义背景图覆盖 */
+}
+
+.container {
+    max-width: 600px;
+    margin: 100px auto;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(12px);
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--border-color);
+}
+
+button {
+    background: var(--accent-color);
+    border: none;
+    color: #1a2a3a;
+    padding: 8px 16px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+button:hover {
+    background: var(--accent-hover);
+    transform: scale(1.02);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+#app {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 260px;
+    background: var(--sidebar-bg);
+    backdrop-filter: blur(12px);
+    padding: 20px;
+    border-right: 1px solid var(--border-color);
+    box-shadow: 4px 0 12px rgba(0, 0, 0, 0.3);
+}
+
+.sidebar h2 {
+    text-align: center;
+    color: var(--accent-color);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar li {
+    padding: 10px 12px;
+    margin: 8px 0;
+    background: rgba(0, 0, 0, 0.4);
+    border-left: 4px solid var(--accent-color);
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.1s;
+}
+
+.sidebar li.active {
+    background: var(--accent-color);
+    color: #0f1a24;
+    border-left-color: white;
+    box-shadow: 0 2px 6px rgba(102, 192, 244, 0.4);
+}
+
+.main {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.search-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    justify-content: flex-end;
+}
+
+.search-bar input {
+    flex: 1;
+    max-width: 300px;
+    padding: 8px 12px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--border-color);
+    border-radius: 40px;
+    color: white;
+    font-size: 14px;
+}
+
+.games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 25px;
+    margin-top: 20px;
+}
+
+.game-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(4px);
+    border-radius: 16px;
+    overflow: hidden;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(102, 192, 244, 0.3);
+}
+
+.game-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5);
+    border-color: var(--accent-color);
+}
+
+.game-card img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-bottom: 2px solid var(--accent-color);
+}
+
+.game-card .game-name {
+    padding: 12px;
+    font-size: 15px;
+    font-weight: bold;
+    background: rgba(0, 0, 0, 0.6);
+    color: var(--text-color);
+}
+
+.game-card .actions button {
+    background: #2c5a2e;
+    color: white;
+    font-size: 14px;
+    padding: 6px 12px;
+    border-radius: 40px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    min-width: 80px;
+    justify-content: center;
+}
+
+.game-card .actions button img {
+    border: 0;
+    text-decoration: none;
+    outline: none;
+}
+
+.game-card .actions button {
+    background: #2c5a2e;
+    color: white;
+    font-size: 14px;
+    padding: 6px 16px;
+    border-radius: 40px;
+}
+
+.game-card .actions button:hover {
+    background: #3e7a41;
+}
+
+.pagination {
+    margin-top: 40px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    align-items: center;
+}
+
+#page-info {
+    background: rgba(0, 0, 0, 0.5);
+    padding: 6px 14px;
+    border-radius: 40px;
+}
+
+.modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(8px);
+}
+
+.modal-content {
+    background: #3a2a1c;
+    margin: 5% auto;
+    padding: 25px;
+    border-radius: 24px;
+    width: 500px;
+    max-width: 90vw;
+    max-height: 85vh;
+    overflow-y: auto;
+    text-align: center;
+    color: #ffefc0;
+    border: 2px solid #c79a2e;
+    box-shadow: 0 10px 30px black;
+}
+
+.modal-content input {
+    width: 80%;
+    padding: 10px;
+    margin: 15px 0;
+    background: #0f1a24;
+    border: 1px solid var(--accent-color);
+    border-radius: 40px;
+    color: white;
+}
+
+.close-modal, .close-settings-modal, .close-path-modal {
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    color: var(--accent-color);
+}
+
+#loading {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: #1a2a3a;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: bold;
+    border-left: 4px solid var(--accent-color);
+    z-index: 1000;
+}
+
+hr {
+    border-color: var(--border-color);
+    margin: 20px 0;
+}
+
+#settings-btn {
+    margin-top: 20px;
+    width: 80%;
+}
+
+.game-image-container {
+    width: 100%;
+    background: #1a2a3a;
+    position: relative;
+}
+.lazy-img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* 右下角悬浮计数器 */
+.dynamic-island {
+    position: fixed !important;
+    bottom: 20px !important;
+    right: 20px !important;
+    background: rgba(0, 0, 0, 0.85) !important;
+    backdrop-filter: blur(10px) !important;
+    color: white !important;
+    padding: 6px 16px !important;
+    border-radius: 30px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    z-index: 99999 !important;
+    white-space: nowrap !important;
+    pointer-events: none !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;
+    font-family: system-ui, -apple-system, 'Segoe UI', sans-serif !important;
+}
+
+/* 可选：动画效果 */
+.dynamic-island:not(:empty) {
+    animation: fadeInUp 0.3s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 自定义背景图相关 */
+body.custom-bg {
+    background-size: auto;
+    background-repeat: repeat;
+    background-attachment: fixed;
+}
+
+.auth-btn {
+    background: #4b6e8a;
+    border: none;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 12px;
+    margin: 2px;
+    transition: background 0.2s;
+}
+.auth-btn:hover {
+    background: #2c4c6c;
+}
+#auth-modal table td {
+    vertical-align: middle;
+}
+#auth-modal table input {
+    background: #1f1a10;
+    border: 1px solid #c79a2e;
+    border-radius: 20px;
+    padding: 4px 8px;
+    color: white;
+}
+
+#back-to-top {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    z-index: 9999;
+    display: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #2c5a2e;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 22px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    opacity: 0.8;
+    transition: opacity 0.2s, transform 0.2s, background 0.2s;
+}
+#back-to-top:hover {
+    opacity: 1;
+    background: #3e7a41;
+    transform: scale(1.05);
+}
+#back-to-top:active {
+    transform: scale(0.95);
+}
+
+/* 强制显示纵向滚动条 */
+html {
+    overflow-y: scroll;
+}

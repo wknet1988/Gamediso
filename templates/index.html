@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">Gamepedia</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div id="login-panel" class="container">
+        <h1 id="app-name">Gamepedia</h1>
+        <div id="login-status"></div>
+        <button id="steam-login-btn" data-i18n="login">登录 Steam</button>
+    </div>
+
+    <div id="app" style="display:none;">
+        <div class="sidebar">
+            <!-- <h2 id="shelf-title">📀 游戏藏经阁</h2> -->
+            <div id="shelf-logo">
+                <img src="/static/logo.png" alt="Gamepedia" style="width:100%; height:auto; display:block;">
+            </div>
+            <ul id="shelf-list">
+                <!-- 动态生成 -->
+            </ul>
+            <div style="margin-top: 30px; text-align: center;">
+                <button id="auth-btn" style="margin-bottom: 10px;">🔑 授权管理</button>
+                <button id="settings-btn" data-i18n="settings">⚙️ 设置</button>
+            </div>
+        </div>
+        <div class="main">
+            <div class="search-bar">
+                <input type="text" id="search-input" placeholder="" data-i18n-placeholder="search_placeholder">
+                <button id="search-btn" data-i18n="search">🔍 搜索</button>
+            </div>
+            <h2 id="current-shelf-title"></h2>
+            <div class="games-grid" id="games-grid"></div>
+            <div id="game-counter" style="text-align: center; margin-top: 20px; padding: 10px; background: rgba(0,0,0,0.5); border-radius: 30px; font-size: 14px;"></div>
+            <div id="loading-more" style="display:none; text-align:center; padding:20px;">加载更多...</div>
+        </div>
+    </div>
+
+    <!-- 授权管理模态框 -->
+    <div id="auth-modal" class="modal" style="display:none;">
+        <div class="modal-content" style="max-width: 750px;">
+            <span class="close-auth-modal">&times;</span>
+            <h3>🔑 授权管理</h3>
+            <div style="overflow-x: auto;">
+                <table style="width:100%; border-collapse: collapse; margin-top: 15px;">
+                    <thead>
+                        <tr style="background: #2a3e55; color: white;">
+                            <th style="padding: 10px; text-align: left;">平台</th>
+                            <th style="padding: 10px; text-align: left;">状态</th>
+                            <th style="padding: 10px; text-align: left;">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Steam -->
+                        <tr>
+                            <td style="padding: 10px; border-bottom: 1px solid #444;"><img src="https://store.steampowered.com/favicon.ico" style="width:20px;height:20px;vertical-align:middle;margin-right:8px;">Steam</td>
+                            <td style="padding: 10px; border-bottom: 1px solid #444;" id="steam-status">检测中</td>
+                            <td style="padding: 10px; border-bottom: 1px solid #444;">
+                                <button class="auth-btn" id="auth-steam-login">登录</button>
+                                <input type="text" id="auth-steam-api-key" placeholder="API Key" style="width:140px; margin-right:4px; background:#1f1a10; border:1px solid #c79a2e; border-radius:20px; padding:4px 8px; color:white;">
+                                <a href="https://steamcommunity.com/dev/apikey" target="_blank" style="color: #c79a2e; font-size: 18px; text-decoration: none; line-height: 1;">?</a>
+                                <button class="auth-btn" id="auth-steam-save-api">保存</button>
+                                <button class="auth-btn" id="auth-steam-sync">同步</button>
+                            </td>
+                        </tr>
+                        <!-- Steam 家庭组 -->
+                        <tr>
+                        <td style="padding: 10px; border-bottom: 1px solid #444; vertical-align: middle;">
+                            <img src="https://store.steampowered.com/favicon.ico" style="width:20px;height:20px;vertical-align:middle;margin-right:8px;">Steam 家庭组
+                        </td>
+                        <td style="padding: 10px; border-bottom: 1px solid #444; vertical-align: middle;" id="family-status">请使用油猴脚本同步</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #444; vertical-align: middle;">
+                            <button class="auth-btn" id="auth-family-install" style="background:#6a4c7a;">安装脚本</button>
+                            <button class="auth-btn" id="auth-family-open">打开 Steam 商店</button>
+                        </td>
+                        </tr>
+                        <!-- Epic -->
+                        <tr>
+                            <td style="padding: 10px; border-bottom: 1px solid #444;"><img src="https://www.epicgames.com/favicon.ico" style="width:20px;height:20px;vertical-align:middle;margin-right:8px;">Epic Games</td>
+                            <td style="padding: 10px; border-bottom: 1px solid #444;" id="epic-status">检测中</td>
+                            <td style="padding: 10px; border-bottom: 1px solid #444;">
+                                <button class="auth-btn" id="auth-epic-login">获取授权码</button>
+                                <input type="text" id="auth-epic-code" placeholder="授权码" style="width:120px; margin:0 4px; background:#1f1a10; border:1px solid #c79a2e; border-radius:20px; padding:4px 8px; color:white;">
+                                <button class="auth-btn" id="auth-epic-submit">提交</button>
+                                <button class="auth-btn" id="auth-epic-sync">同步</button>
+                            </td>
+                        </tr>
+                        <!-- GOG -->
+                        <tr>
+                            <td style="padding: 10px;"><img src="https://www.gog.com/favicon.ico" style="width:20px;height:20px;vertical-align:middle;margin-right:8px;">GOG</td>
+                            <td style="padding: 10px;" id="gog-status">检测中</td>
+                            <td style="padding: 10px; vertical-align: middle;">
+                                <button class="auth-btn" id="auth-gog-install" style="background:#6a4c7a;">安装脚本</button>
+                                <button class="auth-btn" id="auth-gog-store" style="background:#3a5a7a;">打开 GOG 商店</button>
+                            </td>
+                        </tr>
+                        <!-- Cubejoy -->
+                        <tr>
+                            <td style="padding: 10px; vertical-align: middle;">
+                                <img src="https://www.cubejoy.com/favicon.ico" style="width:20px;height:20px;vertical-align:middle;margin-right:8px;">方块游戏
+                            </td>
+                            <td style="padding: 10px; vertical-align: middle;" id="cubejoy-status">检测中</td>
+                            <td style="padding: 10px; vertical-align: middle;">
+                                <button class="auth-btn" id="auth-cubejoy-install" style="background:#6a4c7a;">安装脚本</button>
+                                <button class="auth-btn" id="auth-cubejoy-store" style="background:#3a5a7a;">打开游戏库</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div id="auth-message" style="margin-top:15px; color:#ffaa66;"></div>
+        </div>
+    </div>
+
+    <!-- 设置模态框（仅保留全局设置） -->
+    <div id="settings-modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close-settings-modal">&times;</span>
+            <h3 data-i18n="settings_title">⚙️ 设置</h3>
+            <div>
+                <label data-i18n="bg_label">🎨 自定义背景图（平铺显示）：</label>
+                <input type="file" id="bg-image-upload" accept="image/*">
+                <button id="clear-bg-btn" data-i18n="clear_bg">移除背景</button>
+                <p style="font-size:12px; margin-top:8px;" data-i18n="bg_hint">提示：上传的图片会以平铺方式作为背景，如需更精细的皮肤自定义，请修改 <code>static/style.css</code> 中的 CSS 变量。</p>
+            </div>
+            <div id="settings-message" style="margin-top: 15px; color: #ffaa66;"></div>
+        </div>
+    </div>
+
+    <!-- Steam 路径输入浮层 -->
+    <div id="steam-path-modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close-path-modal">&times;</span>
+            <h3 data-i18n="steam_path_title">请指定 Steam 安装路径</h3>
+            <p data-i18n="steam_path_desc">为了读取您的游戏自定义列表和“我的最爱”，需要知道 Steam 的安装目录。<br>
+               例如：<code>D:\Steam</code> 或 <code>C:\Program Files (x86)\Steam</code></p>
+            <input type="text" id="modal-steam-path" placeholder="" data-i18n-placeholder="steam_path_placeholder" size="50">
+            <button id="modal-save-steam-path" data-i18n="save_path">保存路径</button>
+            <div id="path-error" style="color:red; margin-top:10px;"></div>
+        </div>
+    </div>
+
+    <!-- 回到顶部按钮 -->
+    <button id="back-to-top" style="position:fixed; bottom:80px; right:20px; z-index:9999; display:none; width:40px; height:40px; border-radius:50%; background:#2c5a2e; color:white; border:none; cursor:pointer; font-size:20px; box-shadow:0 2px 8px rgba(0,0,0,0.3); opacity:0.8; transition:opacity 0.2s;" title="回到顶部">↑</button>
+
+    <script src="/static/script.js"></script>
+    <!-- 占位符，确保页面始终有滚动条 -->
+    <div style="height: 1px; width: 100%;"></div>
+</body>
+</html>
