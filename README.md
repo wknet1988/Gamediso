@@ -22,6 +22,8 @@ Features
 
     🌐 Internationalization – Automatically switches between Chinese and English based on browser language.
 
+<img src="static/homepage_snapshot_en.png" alt="Gamepedia Homepage" width="800">
+
 Installation & Running
 Prerequisites
 
