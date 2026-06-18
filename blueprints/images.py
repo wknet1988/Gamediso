@@ -50,9 +50,10 @@ def epic_image(game_id):
         row = c.fetchone()
         conn.close()
         if row and row[0]:
+            # 尝试下载图片
             download_platform_image(row[0], 'epic', game_id)
     if local_path.exists():
-        return send_cached_file(local_path)
+        return send_file(local_path, conditional=True, max_age=31536000, immutable=True)
     else:
         placeholder = get_placeholder_path('epic')
         if os.path.exists(placeholder):
@@ -72,7 +73,7 @@ def gog_image(game_id):
         if row and row[0]:
             download_platform_image(row[0], 'gog', game_id)
     if local_path.exists():
-        return send_cached_file(local_path)
+        return send_file(local_path, conditional=True, max_age=31536000, immutable=True)
     else:
         placeholder = get_placeholder_path('gog')
         if os.path.exists(placeholder):

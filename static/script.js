@@ -431,11 +431,9 @@ function appendGames(games) {
         if (currentPlatform.id !== 'gog') {
             let runData = '';
             if (currentPlatform.id === 'cubejoy') {
-                // Cubejoy 使用 data-runurl
                 const runUrl = `asuka://runapp/?id=${game.id}`;
                 runData = `data-runurl="${runUrl}"`;
             } else {
-                // Steam 和 Epic 使用 data-id 和 data-platform
                 runData = `data-id="${game.id}" data-platform="${currentPlatform.id}"`;
             }
             actionsHtml = `
@@ -447,6 +445,7 @@ function appendGames(games) {
             `;
         }
 
+        // 使用 data-src 实现懒加载，src 使用占位图（或透明图）
         card.innerHTML = `
             <div class="game-image-container" style="position: relative;">
                 <a href="${storeUrl}" target="_blank" rel="noopener noreferrer" style="display: block;">
@@ -462,11 +461,14 @@ function appendGames(games) {
         `;
         grid.appendChild(card);
     }
+
     // 绑定运行按钮事件
     document.querySelectorAll('.run-btn').forEach(btn => {
         btn.removeEventListener('click', runGameHandler);
         btn.addEventListener('click', runGameHandler);
     });
+
+    // 初始化懒加载
     initLazyLoading();
 }
 
