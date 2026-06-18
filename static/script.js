@@ -449,20 +449,30 @@ function appendGames(games) {
             }
         }
 
-        // 图片元素，使用延迟重试的 onerror
-        const imgSrc = game.image_url || '';
-        const dataSrc = imgSrc;
-        // 占位图（灰色 SVG）
+        // 图片元素
+        const proxyUrl = game.image_url || '';
+        const originalUrl = game.original_url || '';
         const placeholderSvg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 100'%3E%3Crect width='200' height='100' fill='%232a3e55'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%2389a3b5'%3ELoading...%3C/text%3E%3C/svg%3E";
 
-        // 内联 onerror 使用延迟重试
+        // onerror 处理：先尝试代理，失败后尝试原始地址
         const onerrorHandler = `
             if (!this.dataset.retry) {
                 this.dataset.retry = '1';
-                const self = this;
-                setTimeout(function() {
-                    self.src = self.dataset.src;
-                }, 2000);
+                if (this.dataset.original) {
+                    this.src = this.dataset.original;
+                    this.dataset.retry = '2';
+                } else {
+                    this.onerror = null;
+                    this.src = '${placeholderPath}';
+                }
+            } else if (this.dataset.retry === '1') {
+                if (this.dataset.original) {
+                    this.src = this.dataset.original;
+                    this.dataset.retry = '2';
+                } else {
+                    this.onerror = null;
+                    this.src = '${placeholderPath}';
+                }
             } else {
                 this.onerror = null;
                 this.src = '${placeholderPath}';
@@ -472,7 +482,8 @@ function appendGames(games) {
         card.innerHTML = `
             <div class="game-image-container" style="position: relative;">
                 <a href="${storeUrl}" target="_blank" rel="noopener noreferrer" style="display: block;">
-                    <img class="lazy-img" data-src="${dataSrc}" 
+                    <img class="lazy-img" data-src="${proxyUrl}" 
+                         data-original="${originalUrl}"
                          src="${placeholderSvg}" 
                          alt="${escapeHtml(game.name)}"
                          onerror="${onerrorHandler}">

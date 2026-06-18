@@ -19,7 +19,8 @@ def api_games():
             {
                 "id": g["appid"],
                 "name": g["name"],
-                "image_url": f"/images/{g['appid']}.jpg",
+                "image_url": f"/images/steam/{g['appid']}.jpg",
+                "original_url": g.get("header_url", g.get("image_url", "")),
                 "type": g.get("type", "owned")
             }
             for g in games_raw
@@ -30,7 +31,8 @@ def api_games():
             {
                 "id": g["game_id"],
                 "name": g["name"],
-                "image_url": f"/images/epic/{g['game_id']}.jpg"
+                "image_url": f"/images/epic/{g['game_id']}.jpg",
+                "original_url": g.get("header_url", ""),
             }
             for g in games_raw
         ]
@@ -40,7 +42,8 @@ def api_games():
             {
                 "id": g["game_id"],
                 "name": g["name"],
-                "image_url": f"/images/gog/{g['game_id']}.jpg"
+                "image_url": f"/images/gog/{g['game_id']}.jpg",
+                "original_url": g.get("image_url", ""),
             }
             for g in games_raw
         ]
@@ -51,7 +54,8 @@ def api_games():
                 "id": g["game_id"],
                 "s_id": g.get("s_id", ""),
                 "name": g["name"],
-                "image_url": f"/images/cubejoy/{g['game_id']}.jpg"
+                "image_url": f"/images/cubejoy/{g['game_id']}.jpg",
+                "original_url": g.get("image_url", ""),
             }
             for g in games_raw
         ]

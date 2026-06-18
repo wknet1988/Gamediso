@@ -16,14 +16,13 @@ def get_placeholder_path(platform: str) -> str:
     return os.path.join(os.path.dirname(__file__), '..', 'static', filename)
 
 def async_download(url, platform, game_id):
-    """在后台线程下载图片"""
     def _download():
         download_platform_image(url, platform, game_id)
     thread = threading.Thread(target=_download)
     thread.daemon = True
     thread.start()
 
-@images_bp.route('/<int:appid>.jpg')
+@images_bp.route('/steam/<int:appid>.jpg')
 def steam_image(appid):
     local_path = get_platform_image_path('steam', str(appid))
     if not local_path.exists():
