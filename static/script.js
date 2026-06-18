@@ -258,9 +258,23 @@ function clearBackground() {
     if (settingsMessage) settingsMessage.innerText = '背景已移除';
 }
 
+async function updateVersionDisplay() {
+    try {
+        const resp = await fetch('/api/version');
+        const data = await resp.json();
+        const verEl = document.getElementById('app-version');
+        if (verEl) {
+            verEl.innerText = `版本: ${data.version}`;
+        }
+    } catch(e) {
+        console.error('获取版本失败', e);
+    }
+}
+
 function showSettingsModal() {
     if (settingsModal) settingsModal.style.display = 'block';
     if (settingsMessage) settingsMessage.innerText = '';
+    updateVersionDisplay(); 
 }
 function hideSettingsModal() { if (settingsModal) settingsModal.style.display = 'none'; }
 function showSteamPathModal() { if (steamPathModal) steamPathModal.style.display = 'block'; }

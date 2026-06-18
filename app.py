@@ -1,7 +1,7 @@
 import os
 import webbrowser
 from threading import Timer
-from flask import Flask, render_template
+from flask import Flask, request, session, redirect, render_template, send_file, jsonify
 from flask_cors import CORS
 from blueprints.games import games_bp
 from blueprints.images import images_bp
@@ -40,6 +40,12 @@ app.register_blueprint(family_bp)
 app.register_blueprint(epic_bp)
 app.register_blueprint(gog_bp)
 app.register_blueprint(cubejoy_bp)
+
+APP_VERSION = "v1.0 Beta2"
+
+@app.route('/api/version')
+def get_version():
+    return jsonify({"version": APP_VERSION})
 
 # 主页
 @app.route('/')
