@@ -387,7 +387,7 @@ function appendGames(games) {
         const card = document.createElement('div');
         card.className = 'game-card';
 
-        // 商店页 URL
+        // 商店链接
         let storeUrl = '';
         if (currentPlatform.id === 'steam') {
             storeUrl = `https://store.steampowered.com/app/${game.id}`;
@@ -431,26 +431,51 @@ function appendGames(games) {
             let runData = '';
             if (currentPlatform.id === 'cubejoy') {
                 const runUrl = `asuka://runapp/?id=${game.id}`;
-                runData = `data-runurl="${runUrl}"`;
+                    runData = `data-runurl="${runUrl}"`;
+                } else {
+                    console.warn('Cubejoy 游戏缺少 id:', game);
+                }
             } else {
                 runData = `data-id="${game.id}" data-platform="${currentPlatform.id}"`;
             }
-            actionsHtml = `
-                <div class="actions">
-                    <button class="run-btn" ${runData}>
-                        ${iconHtml} ${t.run}
-                    </button>
-                </div>
-            `;
+            if (runData) {
+                actionsHtml = `
+                    <div class="actions">
+                        <button class="run-btn" ${runData}>
+                            ${iconHtml} ${t.run}
+                        </button>
+                    </div>
+                `;
+            }
         }
+
+        // 图片元素，使用延迟重试的 onerror
+        const imgSrc = game.image_url || '';
+        const dataSrc = imgSrc;
+        // 占位图（灰色 SVG）
+        const placeholderSvg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 100'%3E%3Crect width='200' height='100' fill='%232a3e55'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%2389a3b5'%3ELoading...%3C/text%3E%3C/svg%3E";
+
+        // 内联 onerror 使用延迟重试
+        const onerrorHandler = `
+            if (!this.dataset.retry) {
+                this.dataset.retry = '1';
+                const self = this;
+                setTimeout(function() {
+                    self.src = self.dataset.src;
+                }, 2000);
+            } else {
+                this.onerror = null;
+                this.src = '${placeholderPath}';
+            }
+        `;
 
         card.innerHTML = `
             <div class="game-image-container" style="position: relative;">
                 <a href="${storeUrl}" target="_blank" rel="noopener noreferrer" style="display: block;">
-                    <img class="lazy-img" data-src="${game.image_url}" 
-                         src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 100'%3E%3Crect width='200' height='100' fill='%232a3e55'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%2389a3b5'%3ELoading...%3C/text%3E%3C/svg%3E" 
+                    <img class="lazy-img" data-src="${dataSrc}" 
+                         src="${placeholderSvg}" 
                          alt="${escapeHtml(game.name)}"
-                         onerror="if(this.dataset.src && !this.dataset.retry){ this.dataset.retry='1'; this.src=this.dataset.src; } else { this.onerror=null; this.src='${placeholderPath}'; }">
+                         onerror="${onerrorHandler}">
                 </a>
                 ${badgeHtml}
             </div>
