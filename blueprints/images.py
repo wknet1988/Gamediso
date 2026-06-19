@@ -2,7 +2,7 @@ from flask import Blueprint, send_file, abort
 import sqlite3
 import os
 import threading
-from core.cache import get_platform_image_path, download_platform_image
+from core.cache import get_platform_image_path, download_platform_image, is_image_valid
 
 images_bp = Blueprint('images', __name__, url_prefix='/images')
 
