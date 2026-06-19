@@ -59,7 +59,7 @@ const i18n = {
         auth_epic_code_placeholder: '授权码',
         donate: '❤️ 打赏',
         donate_title: '☕ 打赏支持',
-        donate_desc: '如果您觉得本项目有帮助，欢迎打赏以支持持续开发！',
+        donate_desc: '本软件是免费开源软件，无需付费即可使用完整功能。\n但如果您觉得本项目有帮助，欢迎打赏以支持持续开发！',
         donate_thanks: '感谢您的支持！',
         version_label: '版本:',
         github_label: 'GitHub',
