@@ -1,8 +1,8 @@
 // ==================== 国际化配置 ====================
 const i18n = {
     zh: {
-        app_name: '游戏藏经阁',
-        shelf_header: '📀 游戏藏经阁',
+        app_name: 'GP游戏收藏馆',
+        shelf_header: '📀 GP游戏收藏馆',
         login: '登录 Steam',
         settings: '⚙️ 设置',
         search: '🔍 搜索',

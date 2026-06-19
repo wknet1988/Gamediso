@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name         Cubejoy Sync to Gamepedia
-// @name-zh      方块游戏库同步到游戏藏经阁
+// @name-zh      方块游戏库同步到GP游戏收藏馆
 // @namespace    http://localhost:5000
 // @version      2.0
 // @description  Fetch Cubejoy library and sync to Gamepedia
-// @description-zh  从方块游戏平台同步游戏列表到本地游戏藏经阁
+// @description-zh  从方块游戏平台同步游戏列表到本地GP游戏收藏馆
 // @author       Gamepedia
 // @match        https://account.cubejoy.com/Comment/MyGame
 // @grant        GM_xmlhttpRequest
@@ -20,12 +20,12 @@
     // ==================== 国际化配置 ====================
     const i18n = {
         zh: {
-            sync_btn: '🧊 同步到游戏藏经阁',
+            sync_btn: '🧊 同步到GP游戏收藏馆',
             sync_btn_syncing: '同步中...',
             no_games: '未获取到游戏，请确认已登录并访问“我的游戏”页面',
             sync_success: (count) => `同步成功！共 ${count} 款游戏`,
             sync_failed: (error) => `同步失败：${error || '未知错误'}`,
-            network_error: '网络错误，请确保本地游戏藏经阁服务已启动 (http://localhost:5000)',
+            network_error: '网络错误，请确保本地GP游戏收藏馆服务已启动 (http://localhost:5000)',
             fetch_failed: '抓取游戏失败：',
             invalid_response: '服务器返回无效响应'
         },

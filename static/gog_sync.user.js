@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name         GOG Sync to Gamepedia
-// @name-zh      GOG 同步到游戏藏经阁
+// @name-zh      GOG 同步到GP游戏收藏馆
 // @namespace    http://localhost:5000
 // @version      2.1
 // @description  Fetch GOG library and sync to Gamepedia
-// @description-zh  从 GOG 账户页面抓取游戏列表并同步到本地游戏藏经阁
+// @description-zh  从 GOG 账户页面抓取游戏列表并同步到本地GP游戏收藏馆
 // @author       Gamepedia
 // @match        https://www.gog.com/account*
 // @grant        GM_xmlhttpRequest
@@ -18,12 +18,12 @@
     // ==================== 国际化配置 ====================
     const i18n = {
         zh: {
-            sync_btn: '📀 同步到游戏藏经阁',
+            sync_btn: '📀 同步到GP游戏收藏馆',
             sync_btn_syncing: '同步中...',
             no_games: '未获取到游戏，请确认已登录并访问“我的游戏”页面',
             sync_success: (count) => `同步成功！共 ${count} 款游戏`,
             sync_failed: (error) => `同步失败：${error || '未知错误'}`,
-            network_error: '网络错误，请确保本地游戏藏经阁服务已启动 (http://localhost:5000)',
+            network_error: '网络错误，请确保本地GP游戏收藏馆服务已启动 (http://localhost:5000)',
             fetch_failed: '抓取游戏失败：',
             invalid_response: '服务器返回无效响应'
         },
