@@ -416,3 +416,25 @@ html {
     border-left: 3px solid #66c0f4;
     margin: 8px 0 0 0;
 }
+
+/* 外部平台图标按钮 */
+.platform-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+    transition: background 0.2s, transform 0.1s;
+    text-decoration: none;
+}
+.platform-icon-btn:hover {
+    background: rgba(0, 0, 0, 0.6);
+    transform: scale(1.05);
+}
+.platform-icon-btn img {
+    width: 20px;
+    height: 20px;
+    display: block;
+}
