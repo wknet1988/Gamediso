@@ -363,3 +363,23 @@ document.getElementById('auth-gog-sync')?.addEventListener('click', async () => 
         //alert('同步失败：' + (data.error || '未知错误'));
     }
 });
+
+// ==================== 回到顶部按钮 ====================
+const backToTopBtn = document.getElementById('back-to-top');
+
+function handleBackToTopVisibility() {
+    if (window.pageYOffset > 300) {
+        backToTopBtn.style.display = 'block';
+    } else {
+        backToTopBtn.style.display = 'none';
+    }
+}
+
+if (backToTopBtn) {
+    window.addEventListener('scroll', handleBackToTopVisibility, { passive: true });
+    backToTopBtn.addEventListener('click', function() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    // 初始检查一次
+    setTimeout(handleBackToTopVisibility, 200);
+}
