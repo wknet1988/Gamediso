@@ -20,6 +20,7 @@ async function loadShelves() {
                 iconHtml = '<img src="/static/images/gog.ico" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;">';
             } else if (p.id === 'cubejoy') {
                 iconHtml = '<img src="/static/images/cubejoy.ico" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;">';
+                displayName = userLang === 'zh' ? 'Cubejoy 方块' : 'Cubejoy';
             } else {
                 iconHtml = p.icon || '📁';
             }

@@ -26,7 +26,7 @@ def get_platforms():
 
     try:
         if count_cubejoy_games() > 0:
-            platforms.append({"id": "cubejoy", "name": "Cubejoy 方块", "icon": "🧊"})
+            platforms.append({"id": "cubejoy", "name": "Cubejoy", "icon": "🧊"})
     except:
         pass
 
