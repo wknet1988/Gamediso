@@ -13,6 +13,7 @@ def load_config():
         "api_key_alt": None,
         "epic_client_id": "",
         "epic_client_secret": "",
+        "steamgriddb_api_key": "",
     }
     if not os.path.exists(CONFIG_FILE):
         return default_config

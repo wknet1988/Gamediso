@@ -116,3 +116,34 @@ def get_gog_image_path(game_id: str) -> Path:
 
 def get_cubejoy_image_path(game_id: str) -> Path:
     return get_cache_path('cubejoy', game_id)
+
+def download_image_from_steamgriddb(url: str, platform: str, game_id: str) -> bool:
+    """从 SteamGridDB 下载图片到缓存"""
+    if not url:
+        return False
+    # 如果 URL 是相对路径，补全协议
+    if url.startswith('//'):
+        url = 'https:' + url
+    local_path = get_platform_image_path(platform, game_id)
+    if local_path.exists() and is_image_valid(local_path):
+        return True
+    if local_path.exists():
+        local_path.unlink()
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+    for attempt in range(3):
+        try:
+            resp = requests.get(url, stream=True, timeout=15, headers=headers, verify=False)
+            if resp.status_code == 200:
+                temp_path = local_path.with_suffix('.tmp')
+                with open(temp_path, 'wb') as f:
+                    for chunk in resp.iter_content(1024):
+                        f.write(chunk)
+                if is_image_valid(temp_path):
+                    temp_path.rename(local_path)
+                    return True
+                else:
+                    temp_path.unlink()
+            time.sleep(1)
+        except Exception:
+            time.sleep(1)
+    return False

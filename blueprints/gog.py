@@ -4,6 +4,8 @@ import sqlite3
 from gog_db import clear_gog_games, upsert_gog_game, count_gog_games, get_local_gog_ids, delete_gog_games_not_in
 from cache_manager import download_gog_image
 from gog_client import get_gog_games, load_gog_token
+from core.steamgriddb import fetch_cover_from_steamgriddb
+from core.cache import download_image_from_steamgriddb
 
 gog_bp = Blueprint('gog', __name__, url_prefix='/api/gog')
 
@@ -28,10 +30,18 @@ def sync_gog_library():
         if game_id in local_ids:
             continue  # 已存在，跳过
         title = game['title']
-        image_url = game['image_url']
-        if image_url:
-            download_gog_image(image_url, game_id)
-        upsert_gog_game(game_id, title, image_url, now)
+        # 优先 SteamGridDB
+        cover_url = None
+        try:
+            cover_url = fetch_cover_from_steamgriddb(title)
+        except Exception as e:
+            print(f"SteamGridDB 获取失败 ({title}): {e}")
+        if not cover_url:
+            # 回退到原有 image_url
+            cover_url = game.get('image_url', '')
+        if cover_url:
+            download_image_from_steamgriddb(cover_url, 'gog', game_id)
+        upsert_gog_game(game_id, title, cover_url, now)
 
     # 删除本地多余游戏
     to_delete = local_ids - remote_ids
@@ -56,10 +66,18 @@ def gog_sync_from_extension():
         if game_id in local_ids:
             continue
         title = game.get('title', 'Unknown')
-        image_url = game.get('image_url', '')
-        if image_url:
-            download_gog_image(image_url, game_id)
-        upsert_gog_game(game_id, title, image_url, now)
+        # 优先 SteamGridDB
+        cover_url = None
+        try:
+            cover_url = fetch_cover_from_steamgriddb(title)
+        except Exception as e:
+            print(f"SteamGridDB 获取失败 ({title}): {e}")
+        if not cover_url:
+            # 回退到油猴脚本提供的 image_url
+            cover_url = game.get('image_url', '')
+        if cover_url:
+            download_image_from_steamgriddb(cover_url, 'gog', game_id)
+        upsert_gog_game(game_id, title, cover_url, now)
 
     to_delete = local_ids - remote_ids
     if to_delete:

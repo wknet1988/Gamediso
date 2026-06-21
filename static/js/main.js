@@ -383,3 +383,41 @@ if (backToTopBtn) {
     // 初始检查一次
     setTimeout(handleBackToTopVisibility, 200);
 }
+
+// ---- SteamGridDB API Key 保存 ----
+const steamgriddbApiKeyInput = document.getElementById('steamgriddb-api-key');
+const saveSteamgriddbBtn = document.getElementById('save-steamgriddb-api-key');
+const steamgriddbApiStatus = document.getElementById('steamgriddb-api-status');
+
+saveSteamgriddbBtn?.addEventListener('click', async () => {
+    const apiKey = steamgriddbApiKeyInput.value.trim();
+    if (!apiKey) {
+        steamgriddbApiStatus.innerText = '请输入 API Key';
+        steamgriddbApiStatus.style.color = '#f66';
+        return;
+    }
+    saveSteamgriddbBtn.disabled = true;
+    saveSteamgriddbBtn.innerText = '保存中...';
+    try {
+        const resp = await fetch('/api/set_steamgriddb_api_key', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ api_key: apiKey })
+        });
+        const data = await resp.json();
+        if (data.success) {
+            steamgriddbApiStatus.innerText = '✅ 保存成功！';
+            steamgriddbApiStatus.style.color = '#6f6';
+        } else {
+            steamgriddbApiStatus.innerText = '❌ 保存失败：' + (data.error || '未知错误');
+            steamgriddbApiStatus.style.color = '#f66';
+        }
+    } catch (err) {
+        steamgriddbApiStatus.innerText = '❌ 网络错误，请重试';
+        steamgriddbApiStatus.style.color = '#f66';
+        console.error(err);
+    } finally {
+        saveSteamgriddbBtn.disabled = false;
+        saveSteamgriddbBtn.innerText = '保存 API Key';
+    }
+});

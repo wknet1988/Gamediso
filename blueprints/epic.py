@@ -13,6 +13,8 @@ from epic_db import (
 from cache_manager import download_platform_image
 from epic_client import fetch_epic_games, is_epic_authenticated, get_epic_account_name
 from core.config import config
+from core.steamgriddb import fetch_cover_from_steamgriddb
+from core.cache import download_image_from_steamgriddb
 
 epic_bp = Blueprint('epic', __name__, url_prefix='/api/epic')
 
@@ -81,11 +83,18 @@ def sync_epic_library():
                         task_manager.update_task(task_id, progress, f'已检查 {processed}/{total}')
                     continue
 
-                # 新游戏，插入并下载图片
+                # 新游戏，插入并下载图片（优先 SteamGridDB）
                 title = game['name']
-                cover_url = game['header_url']
+                cover_url = None
+                try:
+                    cover_url = fetch_cover_from_steamgriddb(title)
+                except Exception as e:
+                    print(f"SteamGridDB 获取失败 ({title}): {e}")
+                if not cover_url:
+                    # 回退到构造 CDN URL
+                    cover_url = f"https://cdn2.epicgames.com/{app_name}/offer/{app_name}.jpg"
                 if cover_url:
-                    download_platform_image(cover_url, 'epic', app_name)
+                    download_image_from_steamgriddb(cover_url, 'epic', app_name)
                 upsert_epic_game(app_name, title, cover_url, app_name, int(time.time()))
                 processed += 1
                 if processed % 1 == 0:

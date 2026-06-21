@@ -140,14 +140,16 @@ button:hover {
 }
 
 .game-card {
-    background: var(--card-bg);
-    backdrop-filter: blur(4px);
+    display: flex;
+    flex-direction: column;
+    background: rgba(0,0,0,0.6);
     border-radius: 16px;
     overflow: hidden;
     text-align: center;
     transition: transform 0.2s, box-shadow 0.2s;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(102, 192, 244, 0.3);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+    border: 1px solid rgba(199,154,46,0.5);
+    height: 100%; /* 让卡片在网格中撑满，保证同一行高度一致 */
 }
 
 .game-card:hover {
@@ -169,7 +171,14 @@ button:hover {
     font-weight: bold;
     background: rgba(0, 0, 0, 0.6);
     color: var(--text-color);
+    flex-shrink: 0; /* 防止文字被压缩 */
     font-family: 'DanyaMingA', 'Segoe UI', sans-serif;
+}
+
+.game-card .actions {
+    padding: 10px;
+    /* background: #2c2418; */
+    margin-top: auto; /* 将按钮推到底部 */
 }
 
 .game-card .actions button {
@@ -288,8 +297,15 @@ hr {
 .game-image-container {
     width: 100%;
     background: #1a2a3a;
-    position: relative;
+    /* 移除固定高度，让图片自然撑开 */
 }
+
+.game-image-container img {
+    width: 100%;
+    height: auto; /* 保持原始比例，不裁剪 */
+    display: block;
+}
+
 .lazy-img {
     width: 100%;
     height: auto;
