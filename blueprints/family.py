@@ -9,7 +9,6 @@ family_bp = Blueprint('family', __name__, url_prefix='/api')
 
 @family_bp.route('/sync_family_library', methods=['POST'])
 def api_sync_family_library():
-    """油猴脚本调用此接口同步家庭共享游戏"""
     data = request.json
     access_token = data.get('access_token')
     steamid = data.get('steamid')
@@ -18,7 +17,7 @@ def api_sync_family_library():
 
     family_info = get_family_info_with_token(access_token, steamid)
     if not family_info:
-        return jsonify({"success": False, "error": "Cannot get family info. Make sure you are in a Steam Family."}), 400
+        return jsonify({"success": False, "error": "Cannot get family info"}), 400
 
     family_games = get_family_shared_games_with_token(access_token, family_info['family_groupid'])
 
@@ -32,30 +31,23 @@ def api_sync_family_library():
 
     for game in family_games:
         appid = game['appid']
-        name = game['name']
-        header_url = game['header_url']
-
-        # 如果已 owned，跳过
+        # 如果已 owned，跳过（保留 'owned'）
         if appid in owned_appids:
             continue
-
-        # 检查是否存在
+        # 否则 upsert 为 'shared'
         c.execute("SELECT 1 FROM games WHERE appid = ?", (appid,))
         exists = c.fetchone() is not None
         if exists:
             c.execute("UPDATE games SET name = ?, header_url = ?, last_updated = ? WHERE appid = ?",
-                      (name, header_url, now, appid))
+                      (game['name'], game['header_url'], now, appid))
         else:
             c.execute("INSERT INTO games (appid, name, header_url, last_updated, type) VALUES (?, ?, ?, ?, ?)",
-                      (appid, name, header_url, now, 'shared'))
-
-        # 下载图片
+                      (appid, game['name'], game['header_url'], now, 'shared'))
         if not get_cached_image_path(appid).exists():
-            download_image(header_url, appid)
+            download_image(game['header_url'], appid)
 
     conn.commit()
     conn.close()
-
     return jsonify({"success": True, "family_name": family_info['family_name'], "games_count": len(family_games)})
 
 @family_bp.route('/family/count')

@@ -82,23 +82,19 @@ def api_set_steam_path():
 def api_init_library():
     steamid = session.get('steamid') or config.get('steamid')
     api_key = session.get('api_key') or config.get('api_key')
-    steam_path = session.get('steam_path') or config.get('steam_path')
-
     if not steamid or not api_key:
         return jsonify({"success": False, "error": "Missing credentials"}), 400
 
     task_id = str(uuid.uuid4())
     task_manager.create_task(task_id, 100)
 
-    # 在后台线程执行同步
     def run_sync():
-        from steam_client import refresh_games_library
-        refresh_games_library(steamid, api_key, steam_path, force=True, task_id=task_id)
+        from steam_client import sync_owned_games
+        sync_owned_games(steamid, api_key, force=True, task_id=task_id)
 
     thread = threading.Thread(target=run_sync)
     thread.daemon = True
     thread.start()
-
     return jsonify({"task_id": task_id})
 
 @auth_bp.route('/task/<task_id>')
@@ -159,13 +155,12 @@ def api_init_alt_library():
     task_manager.create_task(task_id, 100)
 
     def run_sync():
-        from steam_client import refresh_games_library_alt
-        refresh_games_library_alt(steamid, api_key, force=True, task_id=task_id)
+        from steam_client import sync_alt_games
+        sync_alt_games(steamid, api_key, force=True, task_id=task_id)
 
     thread = threading.Thread(target=run_sync)
     thread.daemon = True
     thread.start()
-
     return jsonify({"task_id": task_id})
 
 @auth_bp.route('/steamgriddb/status')

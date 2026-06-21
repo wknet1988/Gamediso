@@ -225,8 +225,24 @@ function showSyncProgress(taskId) {
             const progress = data.progress || 0;
             fill.style.width = progress + '%';
             percent.innerText = progress + '%';
-            // 使用国际化文本，忽略后端的 message
-            text.innerText = t.sync_processing(progress, 100);
+
+            // 从 data.message 中提取数字（如 "已处理 51/123" 或 "Processed 51/123"）
+            let displayText = '';
+            if (data.message) {
+                const match = data.message.match(/(\d+)\/(\d+)/);
+                if (match) {
+                    const processed = match[1];
+                    const total = match[2];
+                    displayText = t.sync_processing(processed, total);
+                } else {
+                    displayText = data.message;
+                }
+            }
+            if (!displayText) {
+                displayText = `进度 ${progress}%`;
+            }
+            text.innerText = displayText;
+
             if (data.done) {
                 clearInterval(syncPollingInterval);
                 localStorage.removeItem(SYNC_TASK_KEY);

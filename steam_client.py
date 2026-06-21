@@ -423,3 +423,250 @@ def refresh_games_library_alt(steamid, api_key, force=False, task_id=None):
         import traceback
         traceback.print_exc()
         return False
+    
+# ---------- 同步自有游戏（主号） ----------
+def sync_owned_games(steamid, api_key, force=False, task_id=None):
+    """同步主号自有游戏，类型为 'owned'，优先级最高"""
+    if not steamid or not api_key:
+        return False
+
+    if task_id:
+        from core.task_manager import task_manager
+        task_manager.update_task(task_id, 5, '检查主号数据库...')
+
+    now = int(time.time())
+    try:
+        if task_id:
+            task_manager.update_task(task_id, 10, '获取主号游戏列表...')
+        owned_games = fetch_owned_games(api_key, steamid)
+
+        # 获取本地主号游戏 ID (type='owned')
+        conn = sqlite3.connect(DB_PATH, timeout=10)
+        c = conn.cursor()
+        c.execute("SELECT appid FROM games WHERE type = 'owned'")
+        local_owned_ids = {row[0] for row in c.fetchall()}
+        conn.close()
+
+        remote_ids = {g['appid'] for g in owned_games}
+        total = len(remote_ids)
+        processed = 0
+
+        if task_id:
+            task_manager.update_task(task_id, 50, f'开始同步主号 (共 {total} 款)...')
+
+        # 插入或更新主号游戏（如果远程有，则设为 'owned'，覆盖其他类型）
+        for game in owned_games:
+            appid = game['appid']
+            # 检查是否已存在且类型为 'owned'
+            conn = sqlite3.connect(DB_PATH, timeout=10)
+            c = conn.cursor()
+            c.execute("SELECT type FROM games WHERE appid = ?", (appid,))
+            row = c.fetchone()
+            if row and row[0] == 'owned':
+                # 已存在且类型正确，跳过
+                conn.close()
+                processed += 1
+                if task_id and processed % 10 == 0:
+                    progress = 50 + int((processed / total) * 40)
+                    task_manager.update_task(task_id, min(progress, 90), f'已检查 {processed}/{total}')
+                continue
+            conn.close()
+            # 否则插入或更新为 'owned'
+            upsert_game(appid, game['name'], game['header_url'], now, 'owned')
+            if not get_cached_image_path(appid).exists():
+                download_image(game['header_url'], appid)
+            processed += 1
+            if task_id and processed % 10 == 0:
+                progress = 50 + int((processed / total) * 40)
+                task_manager.update_task(task_id, min(progress, 90), f'已处理 {processed}/{total}')
+
+        # 删除主号本地多余的游戏（仅删除 type='owned' 且不在远程列表中的）
+        to_delete_owned = local_owned_ids - remote_ids
+        if to_delete_owned:
+            placeholders = ','.join(['?'] * len(to_delete_owned))
+            conn = sqlite3.connect(DB_PATH, timeout=10)
+            c = conn.cursor()
+            c.execute(f"DELETE FROM games WHERE appid IN ({placeholders}) AND type = 'owned'", tuple(to_delete_owned))
+            conn.commit()
+            conn.close()
+            if task_id:
+                task_manager.update_task(task_id, 92, f'删除主号多余游戏 ({len(to_delete_owned)} 款)')
+
+        if task_id:
+            task_manager.update_task(task_id, 100, f'主号同步完成 (保留 {len(remote_ids)} 款，删除 {len(to_delete_owned)} 款)')
+            task_manager.finish_task(task_id)
+        return True
+    except Exception as e:
+        if task_id:
+            task_manager.update_task(task_id, 100, f'主号同步失败: {str(e)}')
+            task_manager.finish_task(task_id, str(e))
+        print(f"主号同步失败: {e}")
+        import traceback
+        traceback.print_exc()
+        return False
+
+# ---------- 同步家庭组共享游戏 ----------
+def sync_family_games(steamid, api_key, force=False, task_id=None):
+    """同步家庭组共享游戏，类型为 'shared'，优先级次于主号"""
+    if not steamid or not api_key:
+        return False
+
+    if task_id:
+        from core.task_manager import task_manager
+        task_manager.update_task(task_id, 5, '检查家庭组数据库...')
+
+    now = int(time.time())
+    try:
+        if task_id:
+            task_manager.update_task(task_id, 10, '获取家庭组游戏列表...')
+        family_info = get_family_group_for_user(api_key, steamid)
+        if not family_info:
+            if task_id:
+                task_manager.update_task(task_id, 100, '未加入家庭组或获取失败')
+                task_manager.finish_task(task_id)
+            return False
+        family_games = fetch_family_shared_games(api_key, family_info['family_groupid'])
+
+        # 获取本地家庭组游戏 ID (type='shared')
+        conn = sqlite3.connect(DB_PATH, timeout=10)
+        c = conn.cursor()
+        c.execute("SELECT appid FROM games WHERE type = 'shared'")
+        local_shared_ids = {row[0] for row in c.fetchall()}
+        conn.close()
+
+        remote_ids = {g['appid'] for g in family_games}
+        total = len(remote_ids)
+        processed = 0
+
+        if task_id:
+            task_manager.update_task(task_id, 50, f'开始同步家庭组 (共 {total} 款)...')
+
+        for game in family_games:
+            appid = game['appid']
+            conn = sqlite3.connect(DB_PATH, timeout=10)
+            c = conn.cursor()
+            c.execute("SELECT type FROM games WHERE appid = ?", (appid,))
+            row = c.fetchone()
+            if row and row[0] in ('owned', 'shared'):
+                # 已存在且类型为 owned 或 shared，跳过（owned 优先）
+                conn.close()
+                processed += 1
+                if task_id and processed % 10 == 0:
+                    progress = 50 + int((processed / total) * 40)
+                    task_manager.update_task(task_id, min(progress, 90), f'已检查 {processed}/{total}')
+                continue
+            conn.close()
+            # 插入或更新为 'shared'
+            upsert_game(appid, game['name'], game['header_url'], now, 'shared')
+            if not get_cached_image_path(appid).exists():
+                download_image(game['header_url'], appid)
+            processed += 1
+            if task_id and processed % 10 == 0:
+                progress = 50 + int((processed / total) * 40)
+                task_manager.update_task(task_id, min(progress, 90), f'已处理 {processed}/{total}')
+            conn.close()
+
+        # 删除家庭组本地多余的游戏（仅删除 type='shared' 且不在远程列表中的）
+        to_delete_shared = local_shared_ids - remote_ids
+        if to_delete_shared:
+            placeholders = ','.join(['?'] * len(to_delete_shared))
+            conn = sqlite3.connect(DB_PATH, timeout=10)
+            c = conn.cursor()
+            c.execute(f"DELETE FROM games WHERE appid IN ({placeholders}) AND type = 'shared'", tuple(to_delete_shared))
+            conn.commit()
+            conn.close()
+            if task_id:
+                task_manager.update_task(task_id, 92, f'删除家庭组多余游戏 ({len(to_delete_shared)} 款)')
+
+        if task_id:
+            task_manager.update_task(task_id, 100, f'家庭组同步完成 (保留 {len(remote_ids)} 款，删除 {len(to_delete_shared)} 款)')
+            task_manager.finish_task(task_id)
+        return True
+    except Exception as e:
+        if task_id:
+            task_manager.update_task(task_id, 100, f'家庭组同步失败: {str(e)}')
+            task_manager.finish_task(task_id, str(e))
+        print(f"家庭组同步失败: {e}")
+        import traceback
+        traceback.print_exc()
+        return False
+
+# ---------- 同步副号游戏 ----------
+def sync_alt_games(steamid, api_key, force=False, task_id=None):
+    """同步副号游戏，类型为 'alt'，优先级最低"""
+    if not steamid or not api_key:
+        return False
+
+    if task_id:
+        from core.task_manager import task_manager
+        task_manager.update_task(task_id, 5, '检查副号数据库...')
+
+    now = int(time.time())
+    try:
+        if task_id:
+            task_manager.update_task(task_id, 10, '获取副号游戏列表...')
+        owned_games = fetch_owned_games(api_key, steamid)
+
+        # 获取本地副号游戏 ID (type='alt')
+        conn = sqlite3.connect(DB_PATH, timeout=10)
+        c = conn.cursor()
+        c.execute("SELECT appid FROM games WHERE type = 'alt'")
+        local_alt_ids = {row[0] for row in c.fetchall()}
+        conn.close()
+
+        remote_ids = {g['appid'] for g in owned_games}
+        total = len(remote_ids)
+        processed = 0
+
+        if task_id:
+            task_manager.update_task(task_id, 50, f'开始同步副号 (共 {total} 款)...')
+
+        for game in owned_games:
+            appid = game['appid']
+            conn = sqlite3.connect(DB_PATH, timeout=10)
+            c = conn.cursor()
+            c.execute("SELECT type FROM games WHERE appid = ?", (appid,))
+            row = c.fetchone()
+            if row and row[0] in ('owned', 'shared', 'alt'):
+                # 已存在且类型为 owned/shared/alt，跳过（更高优先级已覆盖）
+                conn.close()
+                processed += 1
+                if task_id and processed % 10 == 0:
+                    progress = 50 + int((processed / total) * 40)
+                    task_manager.update_task(task_id, min(progress, 90), f'已检查 {processed}/{total}')
+                continue
+            conn.close()
+            # 插入或更新为 'alt'
+            upsert_game(appid, game['name'], game['header_url'], now, 'alt')
+            if not get_cached_image_path(appid).exists():
+                download_image(game['header_url'], appid)
+            processed += 1
+            if task_id and processed % 10 == 0:
+                progress = 50 + int((processed / total) * 40)
+                task_manager.update_task(task_id, min(progress, 90), f'已处理 {processed}/{total}')
+            conn.close()
+
+        # 删除副号本地多余的游戏（仅删除 type='alt' 且不在远程列表中的）
+        to_delete_alt = local_alt_ids - remote_ids
+        if to_delete_alt:
+            placeholders = ','.join(['?'] * len(to_delete_alt))
+            conn = sqlite3.connect(DB_PATH, timeout=10)
+            c = conn.cursor()
+            c.execute(f"DELETE FROM games WHERE appid IN ({placeholders}) AND type = 'alt'", tuple(to_delete_alt))
+            conn.commit()
+            conn.close()
+            if task_id:
+                task_manager.update_task(task_id, 92, f'删除副号多余游戏 ({len(to_delete_alt)} 款)')
+
+        if task_id:
+            task_manager.update_task(task_id, 100, f'副号同步完成 (保留 {len(remote_ids)} 款，删除 {len(to_delete_alt)} 款)')
+            task_manager.finish_task(task_id)
+        return True
+    except Exception as e:
+        if task_id:
+            task_manager.update_task(task_id, 100, f'副号同步失败: {str(e)}')
+            task_manager.finish_task(task_id, str(e))
+        print(f"副号同步失败: {e}")
+        import traceback
+        traceback.print_exc()
+        return False

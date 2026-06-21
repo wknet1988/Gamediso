@@ -70,7 +70,7 @@ const i18n = {
         paypal: 'PayPal 贝宝',
         steam_alt: 'Steam 副号',
         sync_preparing: '准备中...',
-        sync_processing: (processed, total) => `已处理 ${processed}/${total}`,
+        sync_processing: (processed, total) => `已同步 ${processed}/${total}`,
         sync_complete: '✅ 同步完成！',
         sync_failed: (error) => `❌ 同步失败: ${error}`,
         sync_error: '❌ 错误: ',
