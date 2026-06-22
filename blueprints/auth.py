@@ -38,12 +38,14 @@ def api_status():
     steamid = session.get('steamid')
     api_key = session.get('api_key')
     steam_path = session.get('steam_path')
-    if steamid and api_key and steam_path:
-        return jsonify({"logged_in": True, "steamid": steamid, "has_steam_path": True})
-    elif steamid and api_key:
-        return jsonify({"logged_in": False, "steamid": steamid, "need_steam_path": True})
-    elif steamid:
-        return jsonify({"logged_in": False, "steamid": steamid, "need_api_key": True})
+
+    if steamid:
+        return jsonify({
+            "logged_in": True,
+            "steamid": steamid,
+            "need_api_key": not api_key,
+            "need_steam_path": not steam_path
+        })
     else:
         return jsonify({"logged_in": False})
 

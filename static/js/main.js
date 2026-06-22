@@ -124,8 +124,7 @@ async function checkStatus() {
         } else {
             document.getElementById('login-panel').style.display = 'block';
             document.getElementById('app').style.display = 'none';
-            if (data.need_api_key) showSettingsModal();
-            else if (data.need_steam_path) showSteamPathModal();
+            // 不再自动弹出设置或路径模态框
         }
     } catch (err) { console.error(err); }
 }
