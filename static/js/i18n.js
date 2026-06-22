@@ -112,7 +112,7 @@ help_a2: `1. 在“授权管理”中找到 Epic 行。<br>
         help_q4: '4. 软件是免费的吗？',
         help_a4: '软件完全开源且永久免费使用全部功能，如果您希望赞助本项目，请点击主界面“赞助”按钮。',
         help_q5: '5. 授权有安全风险吗？',
-        help_a5: '本软件完全开源可审查，不含任何恶意代码。通过官方登录取得的认证信息都存储在本地，不会上传或分享给第三方。只要用户保持电脑环境可靠，则没有安全风险。但要谨防授权信息泄露，不使用时可在申请页面解授权，并删除config.json。',
+        help_a5: '本软件完全开源可审查，不含任何恶意代码。通过官方登录取得的认证信息都存储在本地，不会上传或分享给第三方。只要用户保持电脑环境可靠，则没有安全风险。但要谨防授权信息泄露，不使用时可在申请页面解授权，并删除config.db。',
     },
     en: {
         app_name: 'Gamepedia',
@@ -226,7 +226,7 @@ Find the SteamGridDB row in "Authorization Management", enter the API Key obtain
         help_q4: '4. Is the software free?',
         help_a4: 'The software is completely open-source and permanently free to use all features. If you wish to sponsor this project, please click the "Sponsor" button on the main interface.',
         help_q5: '5. Are there security risks with authorization?',
-        help_a5: 'This software is completely open source and verifiable, containing no malicious code. All authentication information obtained through official login is stored locally and will not be uploaded or shared with third parties. As long as users keep their computer environment secure, there is no security risk. However, be cautious about authorization information leakage, and when not in use, you can revoke authorization on the application page，and delete the config.json file.',    }
+        help_a5: 'This software is completely open source and verifiable, containing no malicious code. All authentication information obtained through official login is stored locally and will not be uploaded or shared with third parties. As long as users keep their computer environment secure, there is no security risk. However, be cautious about authorization information leakage, and when not in use, you can revoke authorization on the application page，and delete the config.db file.',    }
 };
 
 let userLang = (navigator.language && navigator.language.startsWith('zh')) ? 'zh' : 'en';
