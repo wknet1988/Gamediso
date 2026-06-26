@@ -100,7 +100,7 @@ help_a2: `1. 在“授权管理”中找到 Epic 行。<br>
 5. 将复制的授权码粘贴到输入框，点击“提交”。<br>
 6. 认证成功后，点击“同步”即可拉取游戏库。<br><br>
 <strong>SteamGridDB 高清封面图（可选）：</strong><br>
-在授权管理中找到 SteamGridDB 行，输入从 <a href="https://www.steamgriddb.com/profile/preferences/api" target="_blank">SteamGridDB</a> 获取的 API Key 并保存。这会让 Epic 和 GOG 游戏使用更高清的封面图。`,
+在授权管理中找到 SteamGridDB 行，输入从 <a href="https://www.steamgriddb.com/profile/preferences/api" target="_blank">SteamGridDB</a> 获取的 API Key 并保存。这会让 Epic 游戏使用更高清的封面图。`,
 
         help_q3: '3. 如何安装油猴脚本并使用同步功能？',
         help_a3: `1. 首先安装 Tampermonkey 浏览器扩展（Chrome / Firefox / Edge 均可）。<br>
@@ -214,7 +214,7 @@ help_a2: `1. Find the Epic row in "Authorization Management".<br>
 5. Paste the code into the input field and click "Submit".<br>
 6. After authentication, click "Sync" to pull your Epic library.<br><br>
 <strong>SteamGridDB HD Covers (Optional):</strong><br>
-Find the SteamGridDB row in "Authorization Management", enter the API Key obtained from <a href="https://www.steamgriddb.com/profile/preferences/api" target="_blank">SteamGridDB</a> and save it. This will provide higher-quality covers for Epic and GOG games.`,
+Find the SteamGridDB row in "Authorization Management", enter the API Key obtained from <a href="https://www.steamgriddb.com/profile/preferences/api" target="_blank">SteamGridDB</a> and save it. This will provide higher-quality covers for Epic games.`,
 
         help_q3: '3. How to install userscripts and use sync?',
         help_a3: `1. Install Tampermonkey extension (Chrome / Firefox / Edge).<br>
