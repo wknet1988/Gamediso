@@ -69,10 +69,29 @@ function appendGames(games) {
         let badgeHtml = '';
         if (currentPlatform.id === 'steam') {
             if (game.type === 'shared') {
-                badgeHtml = `<div style="position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.7); color: #ffd700; font-size: 11px; padding: 2px 6px; border-radius: 20px; z-index: 10; backdrop-filter: blur(2px);">${t.badge_family}</div>`;
+                badgeHtml = `<div class="game-badge" style="position: absolute; right: 5px; background: rgba(0,0,0,0.7); color: #ffd700; font-size: 11px; padding: 2px 6px; border-radius: 20px; z-index: 10; backdrop-filter: blur(2px);">${t.badge_family}</div>`;
             } else if (game.type === 'alt') {
-                badgeHtml = `<div style="position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.7); color: #66c0f4; font-size: 11px; padding: 2px 6px; border-radius: 20px; z-index: 10; backdrop-filter: blur(2px);">${t.badge_alt}</div>`;
+                badgeHtml = `<div class="game-badge" style="position: absolute; right: 5px; background: rgba(0,0,0,0.7); color: #66c0f4; font-size: 11px; padding: 2px 6px; border-radius: 20px; z-index: 10; backdrop-filter: blur(2px);">${t.badge_alt}</div>`;
             }
+        }
+
+        // 在函数开头读取一次
+        const showBanner = localStorage.getItem('show_game_banner') === 'true';
+
+        let platformDisplayName = currentPlatform.name;
+        if (currentPlatform.id === 'cubejoy') {
+            platformDisplayName = userLang === 'zh' ? 'Cubejoy 方块' : 'Cubejoy';
+        }
+        let bannerHtml = '';
+        if (showBanner) {
+            const platformDisplayName = currentPlatform.name;
+            // ... 生成横幅内容（和之前一致）
+            bannerHtml = `
+        <div class="game-banner">
+            <span class="banner-left">${iconHtml} ${platformDisplayName}</span>
+            <span class="banner-right"><img src="/static/images/windows.png" alt="Windows" style="height:14px; vertical-align:middle;"></span>
+        </div>
+    `;
         }
 
         // 在循环内部，定义 runUrl
@@ -157,6 +176,7 @@ function appendGames(games) {
 
         card.innerHTML = `
             <div class="game-image-container" style="position: relative;">
+                ${bannerHtml}
                 <a href="${storeUrl}" target="_blank" rel="noopener noreferrer" style="display: block;">
                     <img class="lazy-img" data-src="${game.image_url}" 
                          src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 100'%3E%3Crect width='200' height='100' fill='%232a3e55'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%2389a3b5'%3ELoading...%3C/text%3E%3C/svg%3E" 

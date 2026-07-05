@@ -458,3 +458,31 @@ document.getElementById('reset-search-btn')?.addEventListener('click', () => {
         resetAndLoadGames();       // 重新加载游戏列表
     }
 });
+
+// ==================== 横幅显示开关 ====================
+const bannerToggle = document.getElementById('show-banner-toggle');
+if (bannerToggle) {
+    // 默认隐藏（false）
+    const saved = localStorage.getItem('show_game_banner');
+    bannerToggle.checked = saved !== null ? saved === 'true' : false;
+
+    // 初始状态应用类
+    if (bannerToggle.checked) {
+        document.body.classList.add('show-banner');
+    } else {
+        document.body.classList.remove('show-banner');
+    }
+
+    bannerToggle.addEventListener('change', function() {
+        localStorage.setItem('show_game_banner', this.checked ? 'true' : 'false');
+        if (this.checked) {
+            document.body.classList.add('show-banner');
+        } else {
+            document.body.classList.remove('show-banner');
+        }
+        // 重新加载游戏列表以更新横幅显示
+        if (typeof resetAndLoadGames === 'function') {
+            resetAndLoadGames();
+        }
+    });
+}

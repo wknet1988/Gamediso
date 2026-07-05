@@ -304,9 +304,11 @@ hr {
 }
 
 .game-image-container {
-    width: 100%;
+    display: flex;
+    flex-direction: column;
     background: #1a2a3a;
-    /* 移除固定高度，让图片自然撑开 */
+    width: 100%;
+    position: relative; /* 为了角标定位 */
 }
 
 .game-image-container img {
@@ -480,4 +482,71 @@ html {
 #reset-search-btn:hover {
     background: #2c4c6c;
     transform: scale(1.02);
+}
+
+/* ---------- 游戏卡片横幅 ---------- */
+.game-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+    height: 26px;
+    background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    font-size: 12px;
+    font-weight: bold;
+    color: #f8f9fa;
+    flex-shrink: 0;
+    border-radius: 4px 4px 0 0;
+    font-family: 'Microsoft YaHei', '微软雅黑', 'Segoe UI', sans-serif;
+}
+
+/* 强制取消所有下划线 */
+.game-banner,
+.game-banner * {
+    text-decoration: none !important;
+}
+.game-banner a,
+.game-banner a:visited,
+.game-banner a:hover,
+.game-banner a:active {
+    text-decoration: none !important;
+}
+.game-banner img {
+    border: 0 !important;
+    display: inline-block;
+}
+
+.banner-left {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+}
+.banner-left img {
+    width: 16px;
+    height: 16px;
+    /* 白色背景，图标不需要反色 */
+}
+.banner-right {
+    display: flex;
+    align-items: center;
+    opacity: 0.9;
+}
+.banner-right img {
+    height: 14px;
+    width: auto;
+    display: block;
+}
+
+/* 默认：角标在顶部（横幅隐藏时） */
+.game-image-container .game-badge {
+    top: 5px;
+    transition: top 0.2s ease;
+}
+
+/* 当横幅显示时，角标下移 */
+.show-banner .game-image-container .game-badge {
+    top: 30px;
 }

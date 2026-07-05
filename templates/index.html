@@ -15,9 +15,9 @@
       <h1 id="app-name">Gamediso</h1>
       <div id="login-status"></div>
       <button id="steam-login-btn" style="display:inline-flex; align-items:center; gap:6px;">
-        <img src="/static/images/steam.ico" alt="Steam" style="width:20px; height:20px; vertical-align:middle;">
+        <img src="/static/images/steam.ico" alt="Steam" style="width:20px; height:20px; vertical-align:middle;" />
         <span data-i18n="login">登录 Steam</span>
-    </button>
+      </button>
     </div>
 
     <div id="app" style="display:none;">
@@ -136,7 +136,7 @@
               <!-- SteamGridDB -->
               <tr>
                 <td style="padding: 10px; border-bottom: 1px solid #444; vertical-align: middle;">
-                    🟦
+                  🟦
                   <span data-i18n="steamgriddb_platform">SteamGridDB</span>
                 </td>
                 <td style="padding: 10px; border-bottom: 1px solid #444; vertical-align: middle;" id="steamgriddb-status" data-i18n="auth_detecting">检测中</td>
@@ -244,6 +244,13 @@
             <code>static/style.css</code> 中的 CSS 变量。
           </p>
         </div>
+        <div style="margin-top: 15px; text-align: center;">
+          <div style="display: inline-flex; align-items: center; gap: 8px; white-space: nowrap;">
+              <label for="show-banner-toggle" data-i18n="banner_label" style="font-weight: bold;">显示游戏卡片横幅</label>
+              <input type="checkbox" id="show-banner-toggle" checked>
+              <span data-i18n="banner_hint" style="font-size: 12px; color: #888;">在游戏卡片顶部显示平台标识</span>
+          </div>
+      </div>
         <div id="settings-message" style="margin-top: 15px; color: #ffaa66;"></div>
         <div id="app-version" style="margin-top:15px; font-size:12px; color:#888;"></div>
         <div id="app-copyright" style="margin-top:4px; font-size:11px; color:#666;"></div>
