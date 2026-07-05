@@ -486,3 +486,25 @@ if (bannerToggle) {
         }
     });
 }
+
+// ---- 横幅风格选择 ----
+const styleSelect = document.getElementById('banner-style-select');
+if (styleSelect) {
+    // 加载已保存的风格
+    const savedStyle = localStorage.getItem('banner_style') || 'default';
+    styleSelect.value = savedStyle;
+    applyBannerStyle(savedStyle);
+
+    styleSelect.addEventListener('change', function() {
+        const style = this.value;
+        localStorage.setItem('banner_style', style);
+        applyBannerStyle(style);
+    });
+}
+
+function applyBannerStyle(style) {
+    // 移除所有已有的风格类
+    document.body.classList.remove('banner-default', 'banner-playstation', 'banner-xbox', 'banner-nintendo', 'banner-gamesforwindows');
+    // 添加对应类
+    document.body.classList.add('banner-' + style);
+}

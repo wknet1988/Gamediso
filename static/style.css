@@ -485,15 +485,54 @@ html {
 }
 
 /* ---------- 游戏卡片横幅 ---------- */
+/* 默认风格 */
+.banner-default .game-banner {
+    background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    color: #f8f9fa;
+}
+
+/* PlayStation 风格 */
+.banner-playstation .game-banner {
+    background: #003791;
+    border-bottom: 1px solid #002366;
+    color: #fff;
+}
+
+/* Xbox 风格 */
+.banner-xbox .game-banner {
+    background: #107c10;
+    border-bottom: 1px solid #0a5f0a;
+    color: #fff;
+}
+
+/* Nintendo 风格 */
+.banner-nintendo .game-banner {
+    background: #e60012;
+    border-bottom: 1px solid #b3000e;
+    color: #fff;
+}
+
+/* Games for Windows 风格（白底黑字） */
+.banner-gamesforwindows .game-banner {
+    background: #ffffff;
+    border-bottom: 1px solid #cccccc;
+    color: #000000;
+}
+.banner-gamesforwindows .game-banner .banner-left img {
+    filter: none; /* 图标不反色 */
+}
+.banner-gamesforwindows .game-banner .banner-right img {
+    filter: none;
+}
+
+/* 保留原有的 .game-banner 基本样式，移除 background 相关，由类控制 */
 .game-banner {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0 10px;
     height: 26px;
-    background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
-    backdrop-filter: blur(8px);
-    border-bottom: 1px solid rgba(255,255,255,0.1);
     font-size: 12px;
     font-weight: bold;
     color: #f8f9fa;

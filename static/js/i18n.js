@@ -85,6 +85,12 @@ const i18n = {
         steamgriddb_empty_error: '请输入 API Key',
         banner_label: '显示游戏卡片横幅',
         banner_hint: '在游戏卡片顶部显示平台标识',
+        banner_style_label: '横幅风格',
+        banner_style_default: '默认',
+        banner_style_playstation: 'PlayStation',
+        banner_style_xbox: 'Xbox',
+        banner_style_nintendo: 'Nintendo',
+        banner_style_gamesforwindows: 'Games for Windows',
         help: '❓ 帮助',
         help_title: '❓ 帮助中心',
         help_q1: '1. 如何在 Steam 授权并同步？',
@@ -94,8 +100,8 @@ const i18n = {
 4. 点击“保存”，然后点击“同步”即可拉取游戏库。<br>
 <a href="https://steamcommunity.com/dev/apikey" target="_blank">点击这里申请 API Key</a>（需先登录 Steam）`,
 
-help_q2: '2. 如何在 Epic 授权并同步？',
-help_a2: `1. 在“授权管理”中找到 Epic 行。<br>
+        help_q2: '2. 如何在 Epic 授权并同步？',
+        help_a2: `1. 在“授权管理”中找到 Epic 行。<br>
 2. 点击“获取授权码”，新窗口打开 Epic 授权页面。<br>
 3. 登录 Epic 账号后，页面会显示一个表格化的 JSON（类似键值对列表）。<br>
 4. 找到表格中 authorizationCode 字段，其值类似 {"authorizationCode": "d887f29de1234b779067ce2b2fca3b84"}，复制该值。<br>
@@ -201,6 +207,12 @@ help_a2: `1. 在“授权管理”中找到 Epic 行。<br>
         steamgriddb_empty_error: 'Please enter API Key',
         banner_label: 'Show Game Card Banner',
         banner_hint: 'Display platform badge on game card top',
+        banner_style_label: 'Banner Style',
+        banner_style_default: 'Default',
+        banner_style_playstation: 'PlayStation',
+        banner_style_xbox: 'Xbox',
+        banner_style_nintendo: 'Nintendo',
+        banner_style_gamesforwindows: 'Games for Windows',
         help: '❓ Help',
         help_title: '❓ Help Center',
         help_q1: '1. How to authorize and sync Steam?',
@@ -210,8 +222,8 @@ help_a2: `1. 在“授权管理”中找到 Epic 行。<br>
 4. Click "Save", then click "Sync" to pull your game library.<br>
 <a href="https://steamcommunity.com/dev/apikey" target="_blank">Click here to get API Key</a> (login required)`,
 
-help_q2: '2. How to authorize and sync Epic?',
-help_a2: `1. Find the Epic row in "Authorization Management".<br>
+        help_q2: '2. How to authorize and sync Epic?',
+        help_a2: `1. Find the Epic row in "Authorization Management".<br>
 2. Click "Get Auth Code" to open the Epic authorization page.<br>
 3. After logging in, the page will display a table-formatted JSON (like a key-value list).<br>
 4. Locate the authorizationCode field, which looks like {"authorizationCode": "d887f29de1234b779067ce2b2fca3b84"}, and copy it.<br>
@@ -230,7 +242,8 @@ Find the SteamGridDB row in "Authorization Management", enter the API Key obtain
         help_q4: '4. Is the software free?',
         help_a4: 'The software is completely open-source and permanently free to use all features. If you wish to sponsor this project, please click the "Sponsor" button on the main interface.',
         help_q5: '5. Are there security risks with authorization?',
-        help_a5: 'This software is completely open source and verifiable, containing no malicious code. All authentication information obtained through official login is stored locally and will not be uploaded or shared with third parties. As long as users keep their computer environment secure, there is no security risk. However, be cautious about authorization information leakage, and when not in use, you can revoke authorization on the application page，and delete the config.db file.',    }
+        help_a5: 'This software is completely open source and verifiable, containing no malicious code. All authentication information obtained through official login is stored locally and will not be uploaded or shared with third parties. As long as users keep their computer environment secure, there is no security risk. However, be cautious about authorization information leakage, and when not in use, you can revoke authorization on the application page，and delete the config.db file.',
+    }
 };
 
 let userLang = (navigator.language && navigator.language.startsWith('zh')) ? 'zh' : 'en';
