@@ -370,6 +370,25 @@ document.getElementById('reset-search-btn')?.addEventListener('click', () => {
     }
 });
 
+// ---- 在系统默认浏览器中打开主界面 ----
+document.getElementById('open-browser-btn')?.addEventListener('click', async () => {
+    // 已在普通浏览器中访问时，直接新开标签；只有 pywebview 桌面窗口内才需要后端唤起系统浏览器
+    if (!window.pywebview) {
+        window.open(location.origin + '/', '_blank');
+        return;
+    }
+    try {
+        const resp = await fetch('/api/open_in_browser', { method: 'POST' });
+        const data = await resp.json();
+        if (!data.success) {
+            window.open(location.origin + '/', '_blank');   // 后端失败时退化为新开标签
+        }
+    } catch (err) {
+        console.error('打开浏览器失败:', err);
+        window.open(location.origin + '/', '_blank');
+    }
+});
+
 // ==================== 横幅显示开关 ====================
 const bannerToggle = document.getElementById('show-banner-toggle');
 if (bannerToggle) {

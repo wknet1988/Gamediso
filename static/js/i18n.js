@@ -7,6 +7,7 @@ const i18n = {
         settings: '⚙️ 设置',
         search: '🔍 搜索',
         search_placeholder: '搜索游戏名称...',
+        open_in_browser: '在浏览器中打开主界面',
         settings_title: '⚙️ 设置',
         api_key_label: 'Steam Web API Key：',
         api_key_placeholder: '粘贴您的 API Key',
@@ -206,6 +207,7 @@ const i18n = {
         settings: '⚙️ Settings',
         search: '🔍 Search',
         search_placeholder: 'Search game name...',
+        open_in_browser: 'Open main interface in browser',
         settings_title: '⚙️ Settings',
         api_key_label: 'Steam Web API Key:',
         api_key_placeholder: 'Paste your API Key',
@@ -416,6 +418,10 @@ function applyI18n() {
     document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
         const key = el.getAttribute('data-i18n-placeholder');
         if (t[key]) el.placeholder = t[key];
+    });
+    document.querySelectorAll('[data-i18n-title]').forEach(el => {
+        const key = el.getAttribute('data-i18n-title');
+        if (t[key]) el.title = t[key];
     });
     const loadingEl = document.getElementById('loading');
     if (loadingEl && t.loading) loadingEl.innerText = t.loading;

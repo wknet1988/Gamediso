@@ -51,6 +51,16 @@ APP_VERSION = "v1.1 Release"
 def get_version():
     return jsonify({"version": APP_VERSION})
 
+# 在系统默认浏览器中打开主界面（pywebview 窗口内点按钮时使用）
+@app.route('/api/open_in_browser', methods=['POST'])
+def open_in_browser():
+    url = request.host_url.rstrip('/') + '/'
+    try:
+        ok = webbrowser.open(url)
+        return jsonify({"success": bool(ok), "url": url})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
 # 主页
 @app.route('/')
 def index():
