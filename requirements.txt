@@ -1,7 +1,31 @@
+# Gamediso 运行环境依赖（随包发行的 python/ 便携环境）
+#
+# 安装方式：python/python.exe -m pip install -r requirements.txt
+#
+# 注意：
+# 1. 禁止安装 urllib3-future！它会顶替正式版 urllib3，其 h11 后端与打包的 h11
+#    不兼容，会导致 requests 所有带 body 的 POST 崩溃（TypeError: _EventBundle.__init__()）。
+#    本环境已修复为标准组合：requests + urllib3 2.x。
+# 2. gogdl 不在 PyPI 上，需从 GitHub Releases 下载 Windows 二进制：
+#    https://github.com/Heroic-Games-Launcher/heroic-gogdl/releases
+#    已随环境放置 python/Scripts/gogdl.exe（v1.3.1，x86_64）。
+#    注意：1.x 版本已移除 owned 子命令，gog_client.get_gog_games() 的
+#    `gogdl owned --json` 调用仅兼容已下架的 0.5.x；GOG 游戏库同步请使用
+#    油猴脚本通道（/api/gog/sync_from_extension）。
+
+# Web 框架
 flask>=2.0.0
 flask-cors>=3.0.0
-requests>=2.25.0
+
+# HTTP 客户端（自动带入 urllib3<3 / idna / certifi / charset-normalizer）
+requests>=2.31.0
+
+# Steam VDF 文件解析
 vdf>=3.0
+
+# Epic 游戏库（legendary CLI；运行期依赖 filelock）
 legendary-gl>=0.20.0
-gogdl>=0.5.0
+filelock>=4.0.0
+
+# 桌面窗口（pywebview 6.x 自带 bottle / proxy_tools / pythonnet 依赖）
 pywebview>=4.0.0

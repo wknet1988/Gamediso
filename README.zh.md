@@ -72,9 +72,8 @@ Gamediso 是一款多平台游戏库聚合管理工具，旨在帮助您集中�
 Steam	Web API Key + OpenID 登录	1. 申请 Steam Web API Key（填写 localhost 为域名）
 2. 在授权管理中填入 API Key，点击“登录”完成 OpenID 授权	点击“同步”拉取所有已购买游戏
 Steam 家庭组	油猴脚本	安装 family_sync.user.js 脚本，然后访问 Steam 商店 点击右下角按钮	自动同步家庭共享游戏
-Epic Games	OAuth 授权码	1. 点击“获取授权码”跳转至 legendary.gl 页面
-2. 登录 Epic 账号，复制授权码
-3. 返回授权管理粘贴并提交	点击“同步”拉取游戏库
+Epic Games	账密登录（推荐）/ OAuth 授权码	1. 在授权管理 Epic 卡片选择「账密登录」，输入 Epic 邮箱和密码（开启了两步验证则按提示输入验证码），登录成功后自动同步
+2. 备用方式：点击“获取授权码”跳转至 legendary.gl 页面，登录后复制授权码返回提交	点击“同步”拉取游戏库
 GOG	油猴脚本	安装 gog_sync.user.js 脚本，然后访问 GOG 账户页面 点击右下角按钮	自动抓取所有 GOG 游戏
 方块游戏 (Cubejoy)	油猴脚本	安装 cubejoy_sync.user.js 脚本，然后访问 我的游戏 点击右下角按钮	自动分页抓取全部游戏
 

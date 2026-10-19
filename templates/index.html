@@ -11,16 +11,7 @@
   </head>
 
   <body>
-    <div id="login-panel" class="container">
-      <h1 id="app-name">Gamediso</h1>
-      <div id="login-status"></div>
-      <button id="steam-login-btn" style="display:inline-flex; align-items:center; gap:6px;">
-        <img src="/static/images/steam.ico" alt="Steam" style="width:20px; height:20px; vertical-align:middle;" />
-        <span data-i18n="login">登录 Steam</span>
-      </button>
-    </div>
-
-    <div id="app" style="display:none;">
+    <div id="app" style="display:flex;">
       <div class="sidebar">
         <!-- <h2 id="shelf-title">📀 Gamediso</h2> -->
         <div id="shelf-logo">
@@ -68,6 +59,12 @@
           <button id="reset-search-btn" title="Reset" style="background: #4b6e8a; color: white; border: none; border-radius: 30px; cursor: pointer; font-size: 18px; padding: 8px 12px; transition: all 0.2s;">💫</button>
         </div>
         <h2 id="current-shelf-title"></h2>
+        <div id="empty-state" style="display:none; text-align:center; padding:70px 20px 40px;">
+          <div style="font-size:52px; line-height:1;">🎮</div>
+          <h3 style="color:#66c0f4; margin:18px 0 10px;" data-i18n="empty_title">还没有配置任何游戏平台</h3>
+          <p style="color:#a9b8c6; max-width:520px; margin:0 auto 24px; line-height:1.7;" data-i18n="empty_desc">打开左侧边栏的「授权管理」，按提示登录 Steam / Epic / GOG / 方块游戏，同步后即可在这里浏览你的全部游戏。</p>
+          <button id="empty-auth-btn" style="font-size:15px; padding:10px 28px;" data-i18n="empty_action">前往授权管理</button>
+        </div>
         <div class="games-grid" id="games-grid"></div>
         <div id="game-counter" style="text-align: center; margin-top: 20px; padding: 10px; background: rgba(0,0,0,0.5); border-radius: 30px; font-size: 14px;"></div>
         <div id="loading-more" style="display:none; text-align:center; padding:20px;">加载更多...</div>
@@ -76,119 +73,210 @@
 
     <!-- 授权管理模态框 -->
     <div id="auth-modal" class="modal" style="display:none;">
-      <div class="modal-content" style="max-width: 920px; width: 90%; min-width: 720px; position: relative;">
+      <div class="modal-content" style="max-width: 980px; width: 94%; min-width: 720px; position: relative;">
         <span class="close-auth-modal" style="position: absolute; top: 12px; right: 16px; font-size: 28px; font-weight: bold; cursor: pointer; color: #c79a2e;">&times;</span>
         <h3 data-i18n="auth_management">🔑 授权管理</h3>
-        <div style="overflow-x: auto;">
-          <table style="width:100%; border-collapse: collapse; margin-top: 15px;">
-            <thead>
-              <tr style="background: #2a3e55; color: white;">
-                <th style="padding: 10px; text-align: center; font-weight: bold;" data-i18n="auth_platform">平台</th>
-                <th style="padding: 10px; text-align: center; font-weight: bold;" data-i18n="auth_status">状态</th>
-                <th style="padding: 10px; text-align: center; font-weight: bold;" data-i18n="auth_action">操作</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- Steam -->
-              <tr>
-                <td style="padding: 10px; border-bottom: 1px solid #444; vertical-align: middle;">
-                  <img src="/static/images/steam.ico" style="width:20px;height:20px;vertical-align:middle;margin-right:8px;" /><span data-i18n="auth_steam">Steam</span>
-                </td>
-                <td style="padding: 10px; border-bottom: 1px solid #444; vertical-align: middle;" id="steam-status" data-i18n="auth_detecting">检测中</td>
-                <td style="padding: 10px; border-bottom: 1px solid #444; vertical-align: middle;">
-                  <button class="auth-btn" id="auth-steam-login" data-i18n="auth_login">登录</button>
-                  <span style="white-space: nowrap;">
-                    <input type="text" id="auth-steam-api-key" placeholder="API Key" style="width:120px; margin-right:4px; background:#1f1a10; border:1px solid #c79a2e; border-radius:20px; padding:4px 8px; color:white;" />
-                    <a href="https://steamcommunity.com/dev/apikey" target="_blank" style="display:inline-block; width:20px; height:20px; line-height:20px; text-align:center; background:#0078d7; color:white; border-radius:4px; font-size:14px; font-weight:bold; text-decoration:none; margin-left:2px;" title="☞ Steam Web API Key">?</a>
-                  </span>
+        <p style="margin: 4px 0 18px; font-size: 13px; color: #b9a77f;" data-i18n="auth_subtitle">按需配置各平台，未配置的平台不会出现在侧边栏。所有凭证仅保存在本机。</p>
+
+        <div class="auth-grid">
+          <!-- Steam 主号 -->
+          <div class="auth-card">
+            <div class="auth-card-head">
+              <div class="auth-card-title">
+                <img src="/static/images/steam.ico" alt="Steam" /><span data-i18n="auth_steam">Steam</span>
+              </div>
+              <span class="status-pill" id="steam-status" data-i18n="auth_detecting">检测中</span>
+            </div>
+            <div class="auth-card-body">
+              <div class="auth-row">
+                <span class="auth-row-label" data-i18n="auth_step_login">1. 登录账号</span>
+                <button class="auth-btn auth-btn-primary" id="auth-steam-login" data-i18n="auth_login">登录</button>
+              </div>
+              <div class="auth-row">
+                <span class="auth-row-label" data-i18n="auth_step_apikey">2. Web API Key</span>
+                <span class="auth-row-controls">
+                  <input type="text" id="auth-steam-api-key" data-i18n-placeholder="api_key_placeholder" />
+                  <a href="https://steamcommunity.com/dev/apikey" target="_blank" class="auth-help-link" title="☞ Steam Web API Key">?</a>
                   <button class="auth-btn" id="auth-steam-save-api" data-i18n="auth_save">保存</button>
-                  <button class="auth-btn" id="auth-steam-sync" data-i18n="auth_sync">同步</button>
-                </td>
-              </tr>
-              <!-- Steam 家庭组 -->
-              <tr>
-                <td style="padding: 10px; border-bottom: 1px solid #444; vertical-align: middle;">
-                  <img src="/static/images/steam.ico" style="width:20px;height:20px;vertical-align:middle;margin-right:8px;" /><span data-i18n="auth_steam_family">Steam 家庭组</span>
-                </td>
-                <td style="padding: 10px; border-bottom: 1px solid #444; vertical-align: middle;" id="family-status" data-i18n="auth_detecting">检测中</td>
-                <td style="padding: 10px; border-bottom: 1px solid #444; vertical-align: middle;">
-                  <button class="auth-btn" id="auth-family-install" style="background:#6a4c7a;" data-i18n="auth_install_script">安装脚本</button>
-                  <button class="auth-btn" id="auth-family-open" data-i18n="auth_open_store">打开游戏库</button>
-                </td>
-              </tr>
-              <!-- Steam 副号 -->
-              <tr>
-                <td style="padding: 10px; border-bottom: 1px solid #444; vertical-align: middle;">
-                  <img src="/static/images/steam.ico" style="width:20px;height:20px;vertical-align:middle;margin-right:8px;" /><span data-i18n="steam_alt">Steam 副号</span>
-                </td>
-                <td style="padding: 10px; border-bottom: 1px solid #444; vertical-align: middle;" id="steam-alt-status" data-i18n="auth_detecting">检测中</td>
-                <td style="padding: 10px; border-bottom: 1px solid #444; vertical-align: middle;">
-                  <button class="auth-btn" id="auth-steam-alt-login" data-i18n="auth_login">登录</button>
-                  <span style="white-space: nowrap;">
-                    <input type="text" id="auth-steam-alt-api-key" placeholder="API Key" style="width:120px; margin:0 4px; background:#1f1a10; border:1px solid #c79a2e; border-radius:20px; padding:4px 8px; color:white;" />
-                    <a href="https://steamcommunity.com/dev/apikey" target="_blank" style="display:inline-block; width:20px; height:20px; line-height:20px; text-align:center; background:#0078d7; color:white; border-radius:4px; font-size:14px; font-weight:bold; text-decoration:none; margin-left:2px;" title="☞ Steam Web API Key">?</a>
-                  </span>
+                </span>
+              </div>
+              <div class="auth-row">
+                <button class="auth-btn auth-btn-sync" id="auth-steam-sync" data-i18n="auth_sync_library">🔄 同步游戏库</button>
+              </div>
+              <div class="auth-hint" data-i18n="auth_steam_hint">保存 API Key 会自动同步一次。如需读取「我的最爱」与自定义分类，请在「设置」中填写 Steam 安装路径。</div>
+            </div>
+          </div>
+
+          <!-- Epic Games -->
+          <div class="auth-card">
+            <div class="auth-card-head">
+              <div class="auth-card-title">
+                <img src="https://www.epicgames.com/favicon.ico" alt="Epic" /><span data-i18n="auth_epic">Epic Games</span>
+              </div>
+              <span class="status-pill" id="epic-status" data-i18n="auth_detecting">检测中</span>
+            </div>
+            <div class="auth-tabs">
+              <button class="auth-tab active" id="epic-tab-password" data-i18n="epic_tab_password">账密登录</button>
+              <button class="auth-tab" id="epic-tab-code" data-i18n="epic_tab_code">授权码登录</button>
+            </div>
+            <div class="auth-card-body" id="epic-pane-password">
+              <div class="auth-row">
+                <span class="auth-row-label" data-i18n="epic_email_label">邮箱</span>
+                <input type="text" id="epic-login-email" data-i18n-placeholder="epic_email_placeholder" autocomplete="username" />
+              </div>
+              <div class="auth-row">
+                <span class="auth-row-label" data-i18n="epic_password_label">密码</span>
+                <input type="password" id="epic-login-password" data-i18n-placeholder="epic_password_placeholder" autocomplete="current-password" />
+              </div>
+              <div class="auth-row">
+                <button class="auth-btn auth-btn-primary" id="epic-password-login-btn" data-i18n="epic_login_btn">登录</button>
+              </div>
+              <div id="epic-mfa-box" style="display:none; margin-top: 12px; padding: 12px; background: rgba(0,0,0,0.35); border: 1px dashed #c79a2e; border-radius: 12px;">
+                <div style="font-size: 13px; margin-bottom: 8px; color: #ffd700;" data-i18n="epic_mfa_title">该账号开启了两步验证，请输入验证码</div>
+                <div class="auth-row" style="margin-bottom: 6px;">
+                  <input type="text" id="epic-mfa-code" data-i18n-placeholder="epic_mfa_placeholder" maxlength="10" style="flex: 1;" />
+                </div>
+                <div class="auth-row">
+                  <button class="auth-btn auth-btn-primary" id="epic-mfa-verify" data-i18n="epic_mfa_verify">验证</button>
+                  <button class="auth-btn auth-btn-danger" id="epic-mfa-cancel" data-i18n="epic_mfa_cancel">取消</button>
+                </div>
+              </div>
+              <div class="auth-hint" data-i18n="epic_password_hint">密码仅用于登录 Epic 官方接口，不保存、不上传；若触发验证码风控，请改用「授权码登录」。</div>
+            </div>
+            <div class="auth-card-body" id="epic-pane-code" style="display:none;">
+              <div class="auth-row">
+                <button class="auth-btn" id="auth-epic-login" data-i18n="auth_get_code">获取授权码</button>
+                <input type="text" id="auth-epic-code" data-i18n-placeholder="auth_epic_code_placeholder" />
+                <button class="auth-btn" id="auth-epic-submit" data-i18n="auth_submit">提交</button>
+              </div>
+              <div class="auth-hint" data-i18n="auth_epic_code_hint">在新窗口登录 Epic 后，复制页面显示的 authorizationCode，粘贴到输入框提交。</div>
+            </div>
+            <div class="auth-card-body auth-card-footer">
+              <div class="auth-row">
+                <button class="auth-btn auth-btn-sync" id="auth-epic-sync" data-i18n="auth_sync_library">🔄 同步游戏库</button>
+                <button class="auth-btn auth-btn-danger" id="auth-epic-logout" data-i18n="auth_logout">退出登录</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- GOG -->
+          <div class="auth-card">
+            <div class="auth-card-head">
+              <div class="auth-card-title">
+                <img src="https://www.gog.com/favicon.ico" alt="GOG" /><span data-i18n="auth_gog">GOG</span>
+              </div>
+              <span class="status-pill" id="gog-status" data-i18n="auth_detecting">检测中</span>
+            </div>
+            <div class="auth-card-body">
+              <div class="auth-row">
+                <span class="auth-row-label" data-i18n="auth_gog_step1">1. 安装脚本</span>
+                <button class="auth-btn auth-btn-primary" id="auth-gog-install" data-i18n="auth_install_script">安装脚本</button>
+              </div>
+              <div class="auth-row">
+                <span class="auth-row-label" data-i18n="auth_gog_step2">2. 打开游戏库</span>
+                <button class="auth-btn" id="auth-gog-store" data-i18n="auth_open_store">打开游戏库/同步</button>
+              </div>
+              <div class="auth-row">
+                <button class="auth-btn auth-btn-sync" id="auth-gog-sync" data-i18n="auth_sync_library">🔄 同步游戏库</button>
+              </div>
+              <div class="auth-hint" data-i18n="auth_gog_hint">油猴脚本方式：在 GOG 账户页点击右下角「同步到Gamediso」。如已配置 gogdl，也可直接点「同步游戏库」。</div>
+            </div>
+          </div>
+
+          <!-- Cubejoy 方块游戏 -->
+          <div class="auth-card">
+            <div class="auth-card-head">
+              <div class="auth-card-title">
+                <img src="https://www.cubejoy.com/favicon.ico" alt="Cubejoy" /><span data-i18n="auth_cubejoy">Cubejoy 方块</span>
+              </div>
+              <span class="status-pill" id="cubejoy-status" data-i18n="auth_detecting">检测中</span>
+            </div>
+            <div class="auth-card-body">
+              <div class="auth-row">
+                <span class="auth-row-label" data-i18n="auth_cubejoy_step1">1. 安装脚本</span>
+                <button class="auth-btn auth-btn-primary" id="auth-cubejoy-install" data-i18n="auth_install_script">安装脚本</button>
+              </div>
+              <div class="auth-row">
+                <span class="auth-row-label" data-i18n="auth_cubejoy_step2">2. 打开游戏库</span>
+                <button class="auth-btn" id="auth-cubejoy-store" data-i18n="auth_open_store">打开游戏库/同步</button>
+              </div>
+              <div class="auth-hint" data-i18n="auth_cubejoy_hint">安装脚本后访问方块游戏「我的游戏」页面，点击右下角「同步到Gamediso」即可自动抓取全部游戏。</div>
+            </div>
+          </div>
+
+          <!-- Steam 家庭组 -->
+          <div class="auth-card">
+            <div class="auth-card-head">
+              <div class="auth-card-title">
+                <img src="/static/images/steam.ico" alt="Steam" /><span data-i18n="auth_steam_family">Steam 家庭组</span>
+              </div>
+              <span class="status-pill" id="family-status" data-i18n="auth_detecting">检测中</span>
+            </div>
+            <div class="auth-card-body">
+              <div class="auth-row">
+                <span class="auth-row-label" data-i18n="auth_family_step1">1. 安装脚本</span>
+                <button class="auth-btn auth-btn-primary" id="auth-family-install" data-i18n="auth_install_script">安装脚本</button>
+              </div>
+              <div class="auth-row">
+                <span class="auth-row-label" data-i18n="auth_family_step2">2. 打开游戏库</span>
+                <button class="auth-btn" id="auth-family-open" data-i18n="auth_open_store">打开游戏库/同步</button>
+              </div>
+              <div class="auth-hint" data-i18n="auth_family_hint">安装脚本后访问 Steam 商店账户页，点击右下角「同步到Gamediso」，家庭共享游戏会带 🏠 标记并入 Steam 库。</div>
+            </div>
+          </div>
+
+          <!-- Steam 副号 -->
+          <div class="auth-card">
+            <div class="auth-card-head">
+              <div class="auth-card-title">
+                <img src="/static/images/steam.ico" alt="Steam" /><span data-i18n="steam_alt">Steam 副号</span>
+              </div>
+              <span class="status-pill" id="steam-alt-status" data-i18n="auth_detecting">检测中</span>
+            </div>
+            <div class="auth-card-body">
+              <div class="auth-row">
+                <span class="auth-row-label" data-i18n="auth_step_login">1. 登录账号</span>
+                <button class="auth-btn auth-btn-primary" id="auth-steam-alt-login" data-i18n="auth_login">登录</button>
+              </div>
+              <div class="auth-row">
+                <span class="auth-row-label" data-i18n="auth_step_apikey">2. Web API Key</span>
+                <span class="auth-row-controls">
+                  <input type="text" id="auth-steam-alt-api-key" data-i18n-placeholder="api_key_placeholder" />
                   <button class="auth-btn" id="auth-steam-alt-save-api" data-i18n="auth_save">保存</button>
-                  <button class="auth-btn" id="auth-steam-alt-sync" data-i18n="auth_sync">同步</button>
-                </td>
-              </tr>
+                </span>
+              </div>
+              <div class="auth-row">
+                <button class="auth-btn auth-btn-sync" id="auth-steam-alt-sync" data-i18n="auth_sync_library">🔄 同步游戏库</button>
+              </div>
+              <div class="auth-hint" data-i18n="auth_alt_hint">副号游戏会标记 👤 并入 Steam 库；与主号重复的游戏只保留一份。</div>
+            </div>
+          </div>
 
-              <!-- SteamGridDB -->
-              <tr>
-                <td style="padding: 10px; border-bottom: 1px solid #444; vertical-align: middle;">
-                  🟦
-                  <span data-i18n="steamgriddb_platform">SteamGridDB</span>
-                </td>
-                <td style="padding: 10px; border-bottom: 1px solid #444; vertical-align: middle;" id="steamgriddb-status" data-i18n="auth_detecting">检测中</td>
-                <td style="padding: 10px; border-bottom: 1px solid #444; vertical-align: middle;">
-                  <span style="white-space: nowrap;">
-                    <input type="text" id="steamgriddb-api-key" placeholder="" data-i18n-placeholder="steamgriddb_placeholder" style="width:140px; margin-right:4px; background:#1f1a10; border:1px solid #c79a2e; border-radius:20px; padding:4px 8px; color:white;" />
-                    <a href="https://www.steamgriddb.com/profile/preferences/api" target="_blank" style="display:inline-block; width:20px; height:20px; line-height:20px; text-align:center; background:#0078d7; color:white; border-radius:4px; font-size:14px; font-weight:bold; text-decoration:none; margin-left:2px;" title="☞ SteamGridDB API Key">?</a>
-                  </span>
-                  <button class="auth-btn" id="save-steamgriddb-api-key" data-i18n="steamgriddb_save">保存</button>
-                </td>
-              </tr>
-
-              <!-- Epic -->
-              <tr>
-                <td style="padding: 10px; border-bottom: 1px solid #444; vertical-align: middle;">
-                  <img src="https://www.epicgames.com/favicon.ico" style="width:20px;height:20px;vertical-align:middle;margin-right:8px;" /><span data-i18n="auth_epic">Epic Games</span>
-                </td>
-                <td style="padding: 10px; border-bottom: 1px solid #444; vertical-align: middle;" id="epic-status" data-i18n="auth_detecting">检测中</td>
-                <td style="padding: 10px; border-bottom: 1px solid #444; vertical-align: middle;">
-                  <button class="auth-btn" id="auth-epic-login" data-i18n="auth_get_code">获取授权码</button>
-                  <input type="text" id="auth-epic-code" placeholder="授权码" data-i18n-placeholder="auth_epic_code_placeholder" style="width:120px; margin:0 4px; background:#1f1a10; border:1px solid #c79a2e; border-radius:20px; padding:4px 8px; color:white;" />
-                  <button class="auth-btn" id="auth-epic-submit" data-i18n="auth_submit">提交</button>
-                  <button class="auth-btn" id="auth-epic-sync" data-i18n="auth_sync">同步</button>
-                </td>
-              </tr>
-
-              <!-- GOG -->
-              <tr>
-                <td style="padding: 10px; vertical-align: middle;">
-                  <img src="https://www.gog.com/favicon.ico" style="width:20px;height:20px;vertical-align:middle;margin-right:8px;" /><span data-i18n="auth_gog">GOG</span>
-                </td>
-                <td style="padding: 10px; vertical-align: middle;" id="gog-status" data-i18n="auth_detecting">检测中</td>
-                <td style="padding: 10px; vertical-align: middle;">
-                  <button class="auth-btn" id="auth-gog-install" style="background:#6a4c7a;" data-i18n="auth_install_script">安装脚本</button>
-                  <button class="auth-btn" id="auth-gog-store" style="background:#3a5a7a;" data-i18n="auth_open_store">打开游戏库</button>
-                </td>
-              </tr>
-              <!-- Cubejoy -->
-              <tr>
-                <td style="padding: 10px; vertical-align: middle;">
-                  <img src="https://www.cubejoy.com/favicon.ico" style="width:20px;height:20px;vertical-align:middle;margin-right:8px;" /><span data-i18n="auth_cubejoy">方块游戏</span>
-                </td>
-                <td style="padding: 10px; vertical-align: middle;" id="cubejoy-status" data-i18n="auth_detecting">检测中</td>
-                <td style="padding: 10px; vertical-align: middle;">
-                  <button class="auth-btn" id="auth-cubejoy-install" style="background:#6a4c7a;" data-i18n="auth_install_script">安装脚本</button>
-                  <button class="auth-btn" id="auth-cubejoy-store" style="background:#3a5a7a;" data-i18n="auth_open_store">打开游戏库</button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <!-- SteamGridDB（可选增强） -->
+          <div class="auth-card auth-card-wide">
+            <div class="auth-card-head">
+              <div class="auth-card-title">
+                <span style="width:20px; height:20px; display:inline-block; background:#2b6cb0; border-radius:4px;"></span>
+                <span data-i18n="steamgriddb_platform">SteamGridDB</span>
+                <span class="auth-optional-tag" data-i18n="auth_optional">可选</span>
+              </div>
+              <span class="status-pill" id="steamgriddb-status" data-i18n="auth_detecting">检测中</span>
+            </div>
+            <div class="auth-card-body">
+              <div class="auth-row">
+                <span class="auth-row-label" data-i18n="steamgriddb_label">API Key</span>
+                <span class="auth-row-controls">
+                  <input type="text" id="steamgriddb-api-key" data-i18n-placeholder="steamgriddb_placeholder" />
+                  <a href="https://www.steamgriddb.com/profile/preferences/api" target="_blank" class="auth-help-link" title="☞ SteamGridDB API Key">?</a>
+                  <button class="auth-btn" id="save-steamgriddb-api-key" data-i18n="steamgriddb_save">保存 API Key</button>
+                </span>
+              </div>
+              <div class="auth-hint" data-i18n="steamgriddb_hint">（免费，可为 Epic、GOG 带来高清封面图）</div>
+            </div>
+          </div>
         </div>
-        <div id="auth-message" style="margin-top:15px; color:#ffaa66;"></div>
+
+        <div id="auth-message" style="margin-top:15px; color:#ffaa66; min-height: 20px;"></div>
       </div>
     </div>
 

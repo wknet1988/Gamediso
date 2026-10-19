@@ -1,4 +1,16 @@
 // ==================== 侧边栏平台与搜索 ====================
+function showEmptyState(show) {
+    const emptyEl = document.getElementById('empty-state');
+    const grid = document.getElementById('games-grid');
+    const counter = document.getElementById('game-counter');
+    const title = document.getElementById('current-shelf-title');
+    if (emptyEl) emptyEl.style.display = show ? 'block' : 'none';
+    if (grid) grid.style.display = show ? 'none' : 'grid';
+    if (counter) counter.style.display = show ? 'none' : 'block';
+    if (title) title.innerText = show ? '' : title.innerText;
+    if (show && grid) grid.innerHTML = '';
+}
+
 async function loadShelves() {
     try {
         const resp = await fetch('/api/platforms');
@@ -31,6 +43,7 @@ async function loadShelves() {
             li.addEventListener('click', () => {
                 if (currentPlatform && p.id === currentPlatform.id) return;
                 currentPlatform = p;
+                showEmptyState(false);
                 resetAndLoadGames();
                 highlightActivePlatform();
             });
@@ -38,8 +51,13 @@ async function loadShelves() {
         }
         if (!currentPlatform && platforms.length) {
             currentPlatform = platforms[0];
+            showEmptyState(false);
             resetAndLoadGames();
             highlightActivePlatform();
+        } else if (!platforms.length) {
+            // 未配置任何平台：显示空状态引导
+            currentPlatform = null;
+            showEmptyState(true);
         }
     } catch (err) {
         console.error('加载平台列表失败', err);

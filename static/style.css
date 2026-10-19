@@ -589,3 +589,238 @@ html {
 .show-banner .game-image-container .game-badge {
     top: 30px;
 }
+
+/* ---------- 授权管理：卡片式布局 ---------- */
+#auth-modal .modal-content {
+    text-align: left;
+}
+
+.auth-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 6px;
+}
+
+.auth-card {
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(199, 154, 46, 0.45);
+    border-radius: 14px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.auth-card-wide {
+    grid-column: 1 / -1;
+}
+
+.auth-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px 14px;
+    background: rgba(199, 154, 46, 0.12);
+    border-bottom: 1px solid rgba(199, 154, 46, 0.35);
+}
+
+.auth-card-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: bold;
+    font-size: 15px;
+    color: #ffefc0;
+}
+
+.auth-card-title img {
+    width: 20px;
+    height: 20px;
+}
+
+.auth-optional-tag {
+    font-size: 11px;
+    color: #2c1a0c;
+    background: #ffd700;
+    border-radius: 10px;
+    padding: 1px 8px;
+    margin-left: 2px;
+}
+
+.status-pill {
+    font-size: 12px;
+    border-radius: 20px;
+    padding: 3px 12px;
+    white-space: nowrap;
+    background: rgba(255, 255, 255, 0.08);
+    color: #b9a77f;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.status-pill.pill-ok {
+    color: #7ee08a;
+    border-color: rgba(126, 224, 138, 0.4);
+    background: rgba(126, 224, 138, 0.1);
+}
+
+.status-pill.pill-warn {
+    color: #ffd700;
+    border-color: rgba(255, 215, 0, 0.4);
+    background: rgba(255, 215, 0, 0.08);
+}
+
+.status-pill.pill-err {
+    color: #ff8a8a;
+    border-color: rgba(255, 138, 138, 0.4);
+    background: rgba(255, 138, 138, 0.1);
+}
+
+.auth-card-body {
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+}
+
+.auth-card-footer {
+    border-top: 1px dashed rgba(199, 154, 46, 0.35);
+}
+
+.auth-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.auth-row-label {
+    font-size: 13px;
+    color: #d8c9a3;
+    min-width: 96px;
+    flex-shrink: 0;
+}
+
+.auth-row-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
+}
+
+.auth-row-controls input {
+    flex: 1;
+    min-width: 0;
+}
+
+#auth-modal .auth-card-body input,
+#auth-modal .auth-card-body select {
+    background: #1f1a10;
+    border: 1px solid #c79a2e;
+    border-radius: 20px;
+    padding: 6px 12px;
+    color: white;
+    font-size: 13px;
+}
+
+#auth-modal .auth-btn {
+    background: #4b6e8a;
+    border: none;
+    color: white;
+    padding: 6px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 13px;
+    white-space: nowrap;
+    transition: background 0.2s;
+}
+
+#auth-modal .auth-btn:hover {
+    background: #2c4c6c;
+}
+
+#auth-modal .auth-btn-primary {
+    background: #66c0f4;
+    color: #0f1a24;
+    font-weight: bold;
+}
+
+#auth-modal .auth-btn-primary:hover {
+    background: #89d1f7;
+}
+
+#auth-modal .auth-btn-sync {
+    background: #2c5a2e;
+}
+
+#auth-modal .auth-btn-sync:hover {
+    background: #3e7a41;
+}
+
+#auth-modal .auth-btn-danger {
+    background: #6e2f2f;
+}
+
+#auth-modal .auth-btn-danger:hover {
+    background: #8a3d3d;
+}
+
+#auth-modal .auth-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.auth-help-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    background: #0078d7;
+    color: white !important;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: bold;
+    text-decoration: none !important;
+    flex-shrink: 0;
+}
+
+.auth-hint {
+    font-size: 12px;
+    color: #9c8c6c;
+    line-height: 1.6;
+}
+
+.auth-tabs {
+    display: flex;
+    gap: 4px;
+    padding: 8px 14px 0;
+}
+
+.auth-tab {
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(199, 154, 46, 0.35);
+    border-bottom: none;
+    color: #b9a77f;
+    border-radius: 10px 10px 0 0;
+    padding: 6px 16px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.auth-tab.active {
+    background: rgba(199, 154, 46, 0.2);
+    color: #ffefc0;
+    font-weight: bold;
+}
+
+@media (max-width: 860px) {
+    .auth-grid {
+        grid-template-columns: 1fr;
+    }
+    .auth-row-label {
+        min-width: 0;
+    }
+}

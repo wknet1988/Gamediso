@@ -110,32 +110,24 @@ async function loadSteamgriddbApiKey() {
 }
 
 // ---- 登录状态 ----
+// 不再强制登录 Steam：直接进入主界面，按已配置的平台展示；
+// 未配置任何平台时显示空状态引导用户前往授权管理。
 async function checkStatus() {
     try {
-        const resp = await fetch('/api/status');
-        const data = await resp.json();
-        if (data.logged_in) {
-            document.getElementById('login-panel').style.display = 'none';
-            document.getElementById('app').style.display = 'flex';
-            loadBackgroundFromStorage();
-            await loadShelves();
-            resetAndLoadGames();
-            loadSteamgriddbApiKey();
-        } else {
-            document.getElementById('login-panel').style.display = 'block';
-            document.getElementById('app').style.display = 'none';
-            // 不再自动弹出设置或路径模态框
-        }
+        document.getElementById('app').style.display = 'flex';
+        loadBackgroundFromStorage();
+        loadSteamgriddbApiKey();
+        await loadShelves();
     } catch (err) { console.error(err); }
 }
 
 // ---- 事件绑定 ----
 document.getElementById('search-btn')?.addEventListener('click', onSearch);
 document.getElementById('search-input')?.addEventListener('keypress', (e) => { if(e.key === 'Enter') onSearch(); });
-document.getElementById('steam-login-btn')?.addEventListener('click', async () => {
-    const resp = await fetch('/api/login');
-    const data = await resp.json();
-    if (data.login_url) window.location.href = data.login_url;
+
+// 空状态：引导前往授权管理
+document.getElementById('empty-auth-btn')?.addEventListener('click', () => {
+    document.getElementById('auth-btn')?.click();
 });
 settingsBtn?.addEventListener('click', showSettingsModal);
 saveApiKeyBtn?.addEventListener('click', saveApiKey);
@@ -249,7 +241,14 @@ function showSyncProgress(taskId) {
                     text.innerText = t.sync_failed(data.error);
                 } else {
                     text.innerText = t.sync_complete;
-                    resetAndLoadGames();
+                    // 同步完成后刷新侧边栏（新配置的平台会出现）并重载游戏列表
+                    if (typeof loadShelves === 'function') {
+                        loadShelves().then(() => {
+                            if (typeof resetAndLoadGames === 'function') resetAndLoadGames();
+                        });
+                    } else if (typeof resetAndLoadGames === 'function') {
+                        resetAndLoadGames();
+                    }
                 }
                 setTimeout(() => {
                     container.style.display = 'none';
@@ -341,56 +340,6 @@ document.addEventListener('DOMContentLoaded', () => {
     restoreSyncProgress();
 });
 
-// ---- 同步按钮事件（以 Steam 为例） ----
-document.getElementById('auth-steam-sync')?.addEventListener('click', async () => {
-    localStorage.removeItem(SYNC_TASK_KEY); // 清除旧任务
-    const resp = await fetch('/api/init_library', { method: 'POST' });
-    const data = await resp.json();
-    if (data.task_id) {
-        showSyncProgress(data.task_id);
-    } else if (data.success) {
-        alert('同步已触发（无进度跟踪）');
-        updateAuthStatus();
-    } else {
-        //alert('同步失败：' + (data.error || '未知错误'));
-    }
-});
-
-
-document.getElementById('auth-epic-sync')?.addEventListener('click', async () => {
-    localStorage.removeItem(SYNC_TASK_KEY); // 清除旧任务
-    try {
-        const resp = await fetch('/api/epic/sync', { method: 'POST' });
-        const data = await resp.json();
-        if (data.task_id) {
-            showSyncProgress(data.task_id);
-        } else if (data.success) {
-            alert(`Epic 同步成功！共 ${data.count} 款游戏`);
-            updateAuthStatus();
-        } else {
-            //alert('同步失败：' + (data.error || '未知错误'));
-        }
-    } catch (err) {
-        console.error('Epic 同步请求异常:', err);
-        alert('网络错误，请确保服务已启动');
-    }
-});
-
-// GOG 同步（带进度）
-document.getElementById('auth-gog-sync')?.addEventListener('click', async () => {
-    localStorage.removeItem(SYNC_TASK_KEY); // 清除旧任务
-    const resp = await fetch('/api/gog/sync', { method: 'POST' });
-    const data = await resp.json();
-    if (data.task_id) {
-        showSyncProgress(data.task_id);
-    } else if (data.success) {
-        alert(`GOG 同步成功！共 ${data.count} 款游戏`);
-        updateAuthStatus();
-    } else {
-        //alert('同步失败：' + (data.error || '未知错误'));
-    }
-});
-
 // ==================== 回到顶部按钮 ====================
 const backToTopBtn = document.getElementById('back-to-top');
 
@@ -410,44 +359,6 @@ if (backToTopBtn) {
     // 初始检查一次
     setTimeout(handleBackToTopVisibility, 200);
 }
-
-// ---- SteamGridDB API Key 保存 ----
-const steamgriddbApiKeyInput = document.getElementById('steamgriddb-api-key');
-const saveSteamgriddbBtn = document.getElementById('save-steamgriddb-api-key');
-const steamgriddbApiStatus = document.getElementById('steamgriddb-api-status');
-
-saveSteamgriddbBtn?.addEventListener('click', async () => {
-    const apiKey = steamgriddbApiKeyInput.value.trim();
-    if (!apiKey) {
-        steamgriddbApiStatus.innerText = t.steamgriddb_empty_error;
-        steamgriddbApiStatus.style.color = '#f66';
-        return;
-    }
-    saveSteamgriddbBtn.disabled = true;
-    saveSteamgriddbBtn.innerText = t.steamgriddb_save + '...';
-    try {
-        const resp = await fetch('/api/set_steamgriddb_api_key', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ api_key: apiKey })
-        });
-        const data = await resp.json();
-        if (data.success) {
-            steamgriddbApiStatus.innerText = t.steamgriddb_saved;
-            steamgriddbApiStatus.style.color = '#6f6';
-        } else {
-            steamgriddbApiStatus.innerText = t.steamgriddb_save_failed + (data.error || '');
-            steamgriddbApiStatus.style.color = '#f66';
-        }
-    } catch (err) {
-        steamgriddbApiStatus.innerText = t.steamgriddb_network_error;
-        steamgriddbApiStatus.style.color = '#f66';
-        console.error(err);
-    } finally {
-        saveSteamgriddbBtn.disabled = false;
-        saveSteamgriddbBtn.innerText = t.steamgriddb_save;
-    }
-});
 
 // ---- 重置搜索 ----
 document.getElementById('reset-search-btn')?.addEventListener('click', () => {

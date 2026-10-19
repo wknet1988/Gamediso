@@ -15,11 +15,22 @@ from epic_client import fetch_epic_games, is_epic_authenticated, get_epic_accoun
 from core.config import config
 from core.steamgriddb import fetch_cover_from_steamgriddb
 from core.cache import download_image_from_steamgriddb
+import epic_login as epic_web_login  # 别名导入：避免与下方 epic_login() 路由函数重名
 
 epic_bp = Blueprint('epic', __name__, url_prefix='/api/epic')
 
 LEGENDARY_CONFIG_DIR = os.path.join(os.path.dirname(__file__), '..', 'legendary_config')
 os.makedirs(LEGENDARY_CONFIG_DIR, exist_ok=True)
+
+
+def _run_legendary_auth(exchange_code):
+    """用一次性授权码完成 legendary 认证，返回 (成功与否, 错误信息)"""
+    from epic_client import run_legendary
+    result = run_legendary(["auth", "--token", exchange_code], LEGENDARY_CONFIG_DIR, timeout=60)
+    if result is None or result.returncode != 0:
+        err = result.stderr.strip() if result and result.stderr else 'legendary auth failed'
+        return False, err
+    return True, None
 
 @epic_bp.route('/login')
 def epic_login():
@@ -45,6 +56,63 @@ def epic_status():
     if is_epic_authenticated(LEGENDARY_CONFIG_DIR):
         return jsonify({"authenticated": True, "account_name": get_epic_account_name(LEGENDARY_CONFIG_DIR)})
     return jsonify({"authenticated": False})
+
+
+# ---------- 账密登录（邮箱 + 密码 + 两步验证，同 Heroic 体验） ----------
+
+@epic_bp.route('/login_password', methods=['POST'])
+def epic_login_password():
+    data = request.json or {}
+    email = (data.get('email') or '').strip()
+    password = data.get('password') or ''
+    if not email or not password:
+        return jsonify({"success": False, "error": "missing_credentials"}), 400
+
+    result = epic_web_login.start_password_login(email, password)
+    if result.get('mfa_required'):
+        return jsonify(result)
+    if not result.get('success'):
+        return jsonify(result), 400
+
+    ok, err = _run_legendary_auth(result['exchange_code'])
+    if not ok:
+        return jsonify({"success": False, "error": "legendary_failed", "detail": err}), 400
+    return jsonify({"success": True,
+                    "account_name": get_epic_account_name(LEGENDARY_CONFIG_DIR)})
+
+
+@epic_bp.route('/login_mfa', methods=['POST'])
+def epic_login_mfa():
+    data = request.json or {}
+    login_id = data.get('login_id') or ''
+    code = (data.get('code') or '').strip()
+    if not login_id or not code:
+        return jsonify({"success": False, "error": "missing_credentials"}), 400
+
+    result = epic_web_login.submit_mfa_code(login_id, code)
+    if result.get('success'):
+        ok, err = _run_legendary_auth(result['exchange_code'])
+        if not ok:
+            return jsonify({"success": False, "error": "legendary_failed", "detail": err}), 400
+        return jsonify({"success": True,
+                        "account_name": get_epic_account_name(LEGENDARY_CONFIG_DIR)})
+    return jsonify(result), 400
+
+
+@epic_bp.route('/login_cancel', methods=['POST'])
+def epic_login_cancel():
+    data = request.json or {}
+    epic_web_login.cancel_login(data.get('login_id') or '')
+    return jsonify({"success": True})
+
+
+@epic_bp.route('/logout', methods=['POST'])
+def epic_logout():
+    from epic_client import run_legendary
+    result = run_legendary(["auth", "--delete"], LEGENDARY_CONFIG_DIR, timeout=30)
+    if result is None or result.returncode != 0:
+        return jsonify({"success": False, "error": "logout_failed"}), 400
+    return jsonify({"success": True})
 
 @epic_bp.route('/sync', methods=['POST'])
 def sync_epic_library():

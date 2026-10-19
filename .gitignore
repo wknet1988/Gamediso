@@ -1,25 +1,20 @@
 .vscode/settings.json
+run.sh
+run.bat
+
+# 数据库与本地数据
 cubejoy_games.db
 gog_games.db
 epic_games.db
-config.json
 steam_games.db
+config.json
+config.db
 cache/*
 legendary_config/*
-__pycache__/*
-blueprints/__pycache__/*
-core/__pycache__/*
-oldver/v1.0b1/__pycache__/cache_manager.cpython-310.pyc
-oldver/v1.0b1/__pycache__/epic_client.cpython-310.pyc
-oldver/v1.0b1/__pycache__/gog_client.cpython-310.pyc
-blueprints/__pycache__/__init__.cpython-310.pyc
-blueprints/__pycache__/auth.cpython-310.pyc
-blueprints/__pycache__/cubejoy.cpython-310.pyc
-blueprints/__pycache__/epic.cpython-310.pyc
-blueprints/__pycache__/family.cpython-310.pyc
-blueprints/__pycache__/games.cpython-310.pyc
-blueprints/__pycache__/gog.cpython-310.pyc
-blueprints/__pycache__/images.cpython-310.pyc
-blueprints/__pycache__/platform.cpython-310.pyc
-core/__pycache__/__init__.cpython-310.pyc
-core/__pycache__/cache.cpython-310.pyc
+
+# 编译缓存
+__pycache__/
+*.py[cod]
+
+# Agent 工作目录（含记忆与环境备份）
+.workbuddy/

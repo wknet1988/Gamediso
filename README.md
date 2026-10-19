@@ -73,9 +73,8 @@ Platform	Authorization Method	Required Credentials	Sync Action
 Steam	Web API Key + OpenID Login	1. Get Steam Web API Key (use localhost as domain)
 2. Enter the API Key, click "Login" to complete OpenID auth	Click "Sync" to pull all owned games
 Steam Family	Userscript	Install family_sync.user.js, visit Steam Store, click the bottom‑right button	Automatically syncs family‑shared games
-Epic Games	OAuth Authorization Code	1. Click "Get Auth Code" to go to legendary.gl
-2. Log in, copy the auth code
-3. Paste and submit in the management panel	Click "Sync" to pull your Epic library
+Epic Games	Password Login (recommended) / OAuth Authorization Code	1. In the Epic card of Auth Manager, choose "Password Login": enter your Epic email and password (plus the 2FA code if enabled) — sync starts automatically after login
+2. Fallback: click "Get Auth Code" to go to legendary.gl, log in, copy the auth code and submit	Click "Sync" to pull your Epic library
 GOG	Userscript	Install gog_sync.user.js, visit GOG Account page, click the bottom‑right button	Automatically fetches all GOG games
 Cubejoy	Userscript	Install cubejoy_sync.user.js, visit My Games, click the bottom‑right button	Automatically fetches all pages of your Cubejoy library
 

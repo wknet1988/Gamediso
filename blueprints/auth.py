@@ -85,10 +85,12 @@ def api_status():
             "logged_in": True,
             "steamid": steamid,
             "need_api_key": not api_key,
-            "need_steam_path": not steam_path
+            "need_steam_path": not steam_path,
+            "steamgriddb_api_key": config.get('steamgriddb_api_key', '')
         })
     else:
-        return jsonify({"logged_in": False})
+        return jsonify({"logged_in": False,
+                        "steamgriddb_api_key": config.get('steamgriddb_api_key', '')})
 
 @auth_bp.route('/set_api_key', methods=['POST'])
 def api_set_api_key():
